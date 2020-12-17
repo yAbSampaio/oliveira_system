@@ -138,57 +138,7 @@ const Search = ({ history }) => {
               </CCard>
             </CCol>
           </CRow>
-          {/* <p>
-            CPF :
-            <input
-              id="Input"
-              maxLength="14"
-              name="documentId"
-              value={state.cpf}
-              onChange={(e) => handlechange(e)}
-              placeholder="123.456.789-00"
-            ></input>
-          </p>
-          <p>
-            Nome :
-            <input
-              id="Input"
-              type="text"
-              placeholder="Thiago Jasen Sampaio"
-              value={state.name}
-              onChange={(e) => {
-                setState({ ...state, name: e.target.value });
-              }}
-            ></input>*/}
-
-          {/* </p>  */}
         </div>
-
-        {/* <table id="list">
-          {state.list_check ? (
-            <tr id="head">
-              <td>Nome: </td>
-              <td>CPF: </td>
-              <td>Endereço: Rua, N°, Bairro</td>
-              <td>Divida: </td>
-            </tr>
-          ) : null}
-          {state.client_list.map((client, index) => (
-            <tr onClick={() => handleClick(5)}>
-              <td> {client.name} </td>
-              <td>
-                {" "}
-                {client.cpf.substring(0, 3)}.{client.cpf.substring(3, 6)}.
-                {client.cpf.substring(6, 9)}-{client.cpf.substring(9)}{" "}
-              </td>
-              <td>
-                {" "}
-                {client.street}, {client.home_num}, {client.district}
-              </td>
-              <td> R$ {client.balance * -1} </td>
-            </tr>
-          ))}
-        </table> */}
         <CRow>
           <CCol>
             <CCard>
@@ -201,12 +151,12 @@ const Search = ({ history }) => {
                   id="list"
                 >
                   {state.list_check ? (
-                  <thead className="thead-light">
-                    <th>Nome: </th>
-                    <th>CPF: </th>
-                    <th>Endereço: </th>
-                    <th>Divida: </th>
-                  </thead>
+                    <thead className="thead-light">
+                      <th>Nome: </th>
+                      <th>CPF: </th>
+                      <th>Endereço: </th>
+                      <th>Divida: </th>
+                    </thead>
                   ) : null}
                   {state.client_list.map((client, index) => (
                     <tbody>
