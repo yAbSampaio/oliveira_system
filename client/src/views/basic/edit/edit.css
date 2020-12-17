@@ -1,0 +1,17 @@
+#tablesEdit {
+  display: inline-flex;
+  position: relative;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+}
+#tablesEdit table {
+  font-size: 150%;
+  color: black;
+  margin-top: 2%;
+  font-family: Helvetica;
+  width: 50%;
+}
+#tablesEdit table tr td {
+  text-align: center;
+}
