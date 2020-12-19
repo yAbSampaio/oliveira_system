@@ -30,6 +30,15 @@ export const routeEdit = (data) => {
   );
 };
 
+export const routePay = (data) => {
+  return axios.post(API_URL + "/addPayment", data).then(
+    function (res) {
+      let data = res.data;
+      return data;
+    }.bind(this)
+  );
+};
+
 export const routeListClient = (data) => {
   return axios.post(API_URL + "/list",data).then(
     function (res) {

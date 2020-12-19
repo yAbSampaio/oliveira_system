@@ -50,12 +50,12 @@ const Payment = React.lazy(() => import('./views/basic/payment/payment'))
 
 const routes = [
   // { path: '/', exact: true, name: 'Home' },
-  {path: "/edit", name: "Edit", component: Edit},
+  {path: "/edit/:id", name: "Edit", component: Edit},
   {path: "/list",  exact: true, name: "Dues", component: Dues},
   {path: "/search", name: "Search", component: Search},
   {path: "/register", name: "registerUser", component: Register},
   {path: "/profile/:id", name: "Profile", component: Profile},
-  {path: "/pay", name: "Payment", component: Payment},
+  {path: "/pay/:id", name: "Payment", component: Payment},
   // { path: '/dashboard', name: 'Dashboard', component: Dashboard },
   // { path: '/theme', name: 'Theme', component: Colors, exact: true },
   // { path: '/theme/colors', name: 'Colors', component: Colors },

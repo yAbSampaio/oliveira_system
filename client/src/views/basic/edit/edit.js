@@ -1,6 +1,6 @@
 //React
 import React, { useState, useEffect, Component } from "react";
-import { useHistory } from "react-router-dom";
+import { useHistory, useParams } from "react-router-dom";
 //CoreUi
 import {
   CContainer,
@@ -9,6 +9,8 @@ import {
   CCol,
   CForm,
   CSelect,
+  CCardBody,
+  CCardHeader,
   CFormText,
   CListGroup,
   CListGroupItem,
@@ -27,7 +29,8 @@ import {
   CImg,
 } from "@coreui/react";
 //Api
-import { routeRegister } from "../../../util/Api";
+import { routeGetClient } from "../../../util/Api";
+import { routeEdit } from "../../../util/Api";
 import { cpfMask, telMask, cepMask } from "../mask";
 import {
   clearString,
@@ -36,16 +39,16 @@ import {
   validate_cpf,
   validate_name,
   validate_telephone,
-  validate_debt
+  validate_debt,
 } from "../validate";
 //Style
-import './edit.css';
+import "./edit.css";
 import "../top.css";
 
-
 const Edit = ({ history }) => {
+  let { id } = useParams();
   const [state, setState] = useState({
-    client: {//setar com valores do banco
+    client: {
       name: "",
       cpf: "",
       street: "",
@@ -55,11 +58,31 @@ const Edit = ({ history }) => {
       telephone: "",
       job: "",
     },
-    error: "",
+    error: true,
     message: "",
   });
+  useEffect(() => {
+    if (!state.fetched) {
+      var data = { id };
+      routeGetClient(data).then(function (data) {
+        const client = {
+          name: data.name,
+          cpf: data.cpf,
+          street: data.street,
+          home_num: data.home_num,
+          district: data.district,
+          cep: data.cep,
+          telephone: data.telephone,
+          job: data.job,
+        };
+        setState({ ...state, fetched: true, client });
+      });
+    }
+  }, []);
 
   const editClient = () => {
+    state.error = "";
+    state.message = "";
     const client = {
       name: state.client.name,
       cpf: clearString(state.client.cpf),
@@ -71,39 +94,36 @@ const Edit = ({ history }) => {
       job: state.client.job,
     };
 
-    var error =
-      !validate_cpf(client.cpf) ||
-      !validate_name(client.name) ||
-      !validate_telephone(client.telephone) ||
-      !validate_address(
-        client.cep,
-        client.street,
-        client.home_num,
-        client.district
-      )
-        ? true
-        : false;
-    // var error = validate_name(client.name);
-    // var error = validate_telephone(client.telephone);
-    // var error = validate_balance(
-    //   payment.balance,
-    //   payment.payday,
-    //   payment.due_date
-    //   );
-    // var error = validate_address(
-    //   client.cep,
-    //   client.street,
-    //   client.home_num,
-    //   client.district
-    // );
-    console.log(error);
+    state.message = validate_cpf(client.cpf, state.message);
+    state.message = validate_name(client.name, state.message);
+    state.message = validate_telephone(client.telephone, state.message);
+    state.message = validate_address(
+      client.cep,
+      client.street,
+      client.home_num,
+      client.district,
+      state.message
+    );
+    state.error = state.message != "" ? false : true;
     const data = {
       client: client,
     };
 
-    routeRegister(data).then(function (data) {
-      history.push("/profile");
-    });
+    if (state.error) {
+      routeEdit(data).then(function (data) {
+        history.push("/profile");
+      });
+      state.client.name = "";
+      state.client.cpf = "";
+      state.client.street = "";
+      state.client.home_num = "";
+      state.client.district = "";
+      state.client.cep = "";
+      state.client.telephone = "";
+      state.client.job = "";
+    } else {
+      history.push("/edit/" + id);
+    }
   };
 
   const handlechange = (e) => {
@@ -131,138 +151,150 @@ const Edit = ({ history }) => {
     <div className="register">
       <body>
         <div id="title">
-          <h2>Editando Cliente</h2>
+          <CCard>
+            <CCardHeader>
+              <h2>EDITANDO CLIENTE</h2>
+            </CCardHeader>
+            <CCardBody></CCardBody>
+          </CCard>
         </div>
-        {state.message && (
+        <hr className="mt-0" />
+        {!state.error && (
           <CCard className="border-success" style={{ textAlign: "center" }}>
             {state.message}
           </CCard>
         )}
-        {state.error && (
+        {!state.error && (
           <CCard className="border-danger" style={{ textAlign: "center" }}>
             {state.error}
           </CCard>
         )}
-        <div id="tablesEdit">
-          <table>
-            <h1>Cliente</h1>
-            <tr>
-              <td>Nome :</td>
-              <td>
-                <CInput
-                  type="text"
-                  placeholder="Thiago Jasen Sampaio"
-                  onChange={(e) => {
-                    let client = { ...state.client };
-                    client.name = e.target.value;
-                    setState({ ...state, client });
-                  }}
-                ></CInput>
-              </td>
-            </tr>
-            <tr>
-              <td>CPF :</td>
-              <td>
-                <CInput
-                  maxLength="14"
-                  name="cpf"
-                  value={state.client.cpf}
-                  placeholder="123.456.789-00"
-                  onChange={(e) => handlechange(e)}
-                ></CInput>
-              </td>
-            </tr>
-            <tr>
-              <td>Endereço :</td>
-              <td>
-                <CInput
-                  type="text"
-                  placeholder="Rua Elmer"
-                  onChange={(e) => {
-                    let client = { ...state.client };
-                    client.street = e.target.value;
-                    setState({ ...state, client });
-                  }}
-                ></CInput>
-              </td>
-            </tr>
-            <tr>
-              <td>Numero :</td>
-              <td>
-                <CInput
-                  type="text"
-                  placeholder="131"
-                  onChange={(e) => {
-                    let client = { ...state.client };
-                    client.home_num = e.target.value;
-                    setState({ ...state, client });
-                  }}
-                ></CInput>
-              </td>
-            </tr>
-            <tr>
-              <td>Bairo</td>
-              <td>
-                <CInput
-                  maxLength="9"
-                  name="district"
-                  placeholder="Cidade Nova"
-                  onChange={(e) => {
-                    let client = { ...state.client };
-                    client.district = e.target.value;
-                    setState({ ...state, client });
-                  }}
-                ></CInput>
-              </td>
-            </tr>
-            <tr>
-              <td>CEP :</td>
-              <td>
-                <CInput
-                  maxLength="9"
-                  name="cep"
-                  placeholder="12345-678"
-                  value={state.client.cep}
-                  onChange={(e) => cepChange(e)}
-                ></CInput>
-              </td>
-            </tr>
+        <CRow id="tablesEdit">
+          <CCol sm="12">
+            <CCard>
+              <CCardHeader>
+                <h5>CLIENTE</h5>
+              </CCardHeader>
+              <CCardBody>
+                <CFormGroup>
+                  <CLabel>Nome :</CLabel>
+                  <CInput
+                    type="text"
+                    placeholder="Thiago Jasen Sampaio"
+                    value={state.client.name}
+                    onChange={(e) => {
+                      let client = { ...state.client };
+                      client.name = e.target.value;
+                      setState({ ...state, client });
+                    }}
+                  />
+                </CFormGroup>
+                <CFormGroup>
+                  <CLabel>CPF :</CLabel>
+                  <CInput
+                    placeholder="123.456.789-00"
+                    maxLength="14"
+                    name="cpf"
+                    value={state.client.cpf}
+                    onChange={(e) => handlechange(e)}
+                  />
+                </CFormGroup>
+                <CFormGroup>
+                  <CLabel htmlFor="street">Rua :</CLabel>
+                  <CInput
+                    type="text"
+                    placeholder="Rua Elmer"
+                    value={state.client.street}
+                    onChange={(e) => {
+                      let client = { ...state.client };
+                      client.street = e.target.value;
+                      setState({ ...state, client });
+                    }}
+                  />
+                </CFormGroup>
+                <CFormGroup row className="my-0">
+                  <CCol xs="4">
+                    <CFormGroup>
+                      <CLabel>Bairro :</CLabel>
+                      <CInput
+                        name="district"
+                        placeholder="Cidade Nova"
+                        value={state.client.district}
+                        onChange={(e) => {
+                          let client = { ...state.client };
+                          client.district = e.target.value;
+                          setState({ ...state, client });
+                        }}
+                      />
+                    </CFormGroup>
+                  </CCol>
+                  <CCol xs="4">
+                    <CFormGroup>
+                      <CLabel>Casa :</CLabel>
+                      <CInput
+                        type="text"
+                        placeholder="131"
+                        value={state.client.home_num}
+                        onChange={(e) => {
+                          let client = { ...state.client };
+                          client.home_num = e.target.value;
+                          setState({ ...state, client });
+                        }}
+                      />
+                    </CFormGroup>
+                  </CCol>
+                  <CCol xs="4">
+                    <CFormGroup>
+                      <CLabel>CEP :</CLabel>
+                      <CInput
+                        maxLength="9"
+                        name="cep"
+                        placeholder="12345-678"
+                        value={state.client.cep}
+                        onChange={(e) => cepChange(e)}
+                      />
+                    </CFormGroup>
+                  </CCol>
+                </CFormGroup>
+                <CFormGroup row className="my-0">
+                  <CCol xs="6">
+                    <CFormGroup>
+                      <CLabel>Telefone :</CLabel>
+                      <CInput
+                        type="tel"
+                        maxLength="15"
+                        name="tel"
+                        value={state.client.telephone}
+                        onChange={(e) => telephoneChange(e)}
+                        placeholder="(53) 981408183"
+                      />
+                    </CFormGroup>
+                  </CCol>
+                  <CCol xs="6">
+                    <CFormGroup>
+                      <CLabel>Trabalho :</CLabel>
+                      <CInput
+                        name="job"
+                        value={state.client.job}
+                        onChange={(e) => {
+                          let client = { ...state.client };
+                          client.job = e.target.value;
+                          setState({ ...state, client });
+                        }}
+                        placeholder="Taxista"
+                      />
+                    </CFormGroup>
+                  </CCol>
+                </CFormGroup>
+              </CCardBody>
+            </CCard>
+          </CCol>
+        </CRow>
 
-            <tr>
-              <td>Telefone :</td>
-              <td>
-                <CInput
-                  type="tel"
-                  maxLength="15"
-                  name="tel"
-                  value={state.client.telephone}
-                  onChange={(e) => telephoneChange(e)}
-                  placeholder="(53) 981408183"
-                ></CInput>
-              </td>
-            </tr>
-
-            <tr>
-              <td>Trabalho :</td>
-              <td>
-                <CInput
-                  name="job"
-                  onChange={(e) => {
-                    let client = { ...state.client };
-                    client.job = e.target.value;
-                    setState({ ...state, client });
-                  }}
-                  placeholder="Taxista"
-                ></CInput>
-              </td>
-            </tr>
-          </table>
-          
-        </div>
         <div id="divBut">
-          <CButton class="myButton" onClick={() => editClient()}>
+          <submit type="submit" class="myButton" onClick={() => editClient()}>
             Editar
-          </CButton>
+          </submit>
         </div>
       </body>
     </div>

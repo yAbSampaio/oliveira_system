@@ -43,14 +43,14 @@ const TheSidebar = () => {
               <CImg
               className="c-sidebar-brand-full"
               style={{ width: "100%", height: "100%",border: '0.2px solid grey' }}
-                src="https://cdn.discordapp.com/attachments/300483456440336385/787060493885636639/logo.jpeg"
+                src="https://cdn.discordapp.com/attachments/300483456440336385/788962643523665920/banner.png"
                 //className="d-inline-block align-top"
                 //alt="CoreuiVue"
               />
               <CImg
               className="c-sidebar-brand-minimized"
               style={{ width: "100%", height: "100%",border: '0.2px solid grey' }}
-                src="https://cdn.discordapp.com/attachments/300483456440336385/787070442434330644/logo_ab.png"
+                src="https://cdn.discordapp.com/attachments/300483456440336385/788961555701563422/logo_icon.png"
                 //className="d-inline-block align-top"
                 //alt="CoreuiVue"
               />

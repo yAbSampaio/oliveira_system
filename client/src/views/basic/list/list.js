@@ -37,7 +37,6 @@ import "./list.css";
 import "../top.css";
 
 const DueDate = ({ history }) => {
-  const fields = ["NOME", "CPF", "RUA", "N°", "BAIRRO", "SALDO"];
   const [state, setState] = useState({
     fetched: false,
     clientList: [],
@@ -81,22 +80,23 @@ const DueDate = ({ history }) => {
         <hr className="mt-0" />
         <CRow>
           <CCol>
-            <CCard>
-              <CCardHeader>
-                <h2>Clientes</h2>
-              </CCardHeader>
-              <CCardBody>
-                <table
-                  className="table table-hover table-outline mb-0 d-none d-sm-table"
-                  id="list"
-                >
-                  <thead className="thead-light">
-                    <th>Nome: </th>
-                    <th>CPF: </th>
-                    <th>Endereço: </th>
-                    <th>Divida: </th>
-                  </thead>
-                  {state.clientList.map((client, index) => (
+            {state.clientList.map((client, index) => (
+              <CCard>
+                <CCardHeader>
+                  <h2>Clientes</h2>
+                </CCardHeader>
+                <CCardBody>
+                  <table
+                    className="table table-hover table-outline mb-0 d-none d-sm-table"
+                    id="list"
+                  >
+                    <thead className="thead-light">
+                      <th>Nome: </th>
+                      <th>CPF: </th>
+                      <th>Endereço: </th>
+                      <th>Divida: </th>
+                    </thead>
+
                     <tbody>
                       <tr onClick={() => handleClick(client.id)}>
                         <td> {client.name} </td>
@@ -113,10 +113,10 @@ const DueDate = ({ history }) => {
                         <td> R$ {client.balance * -1} </td>
                       </tr>
                     </tbody>
-                  ))}
-                </table>
-              </CCardBody>
-            </CCard>
+                  </table>
+                </CCardBody>
+              </CCard>
+            ))}
           </CCol>
         </CRow>
       </body>

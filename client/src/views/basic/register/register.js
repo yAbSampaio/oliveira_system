@@ -32,10 +32,11 @@ import {
 import { routeRegister } from "../../../util/Api";
 import IntlCurrencyInput from "react-intl-currency-input";
 import { cpfMask, telMask, cepMask, moneyMask } from "../mask";
+import { stow_deadline, stow_date, stow_debt, stow_payday } from "../stow";
 import {
   clearString,
+  validate_date,
   validate_address,
-  validate_balance,
   validate_cpf,
   validate_name,
   validate_telephone,
@@ -61,6 +62,7 @@ const Register = ({ history }) => {
       balance: "",
       payday: "",
       due_date: "",
+      deadline: "",
     },
     error: "",
     message: "",
@@ -81,6 +83,8 @@ const Register = ({ history }) => {
   };
 
   const register = () => {
+    state.error = "";
+    state.message = "";
     const client = {
       name: state.client.name,
       cpf: clearString(state.client.cpf),
@@ -93,34 +97,63 @@ const Register = ({ history }) => {
     };
 
     const payment = {
-      balance: validate_debt(state.payment.balance),
-      payday: state.payment.payday,
-      due_date: state.payment.due_date,
+      balance: stow_debt(state.payment.balance),
+      payday: stow_payday(state.payment.payday),
+      deadline: "",
     };
-
-    var error =
-      !validate_cpf(client.cpf) ||
-      !validate_name(client.name) ||
-      !validate_telephone(client.telephone) ||
-      !validate_balance(payment.balance, payment.payday, payment.due_date) ||
-      !validate_address(
-        client.cep,
-        client.street,
-        client.home_num,
-        client.district
-      )
-        ? true
-        : false;
-    console.log(error);
+    payment.deadline = stow_deadline(
+      state.payment.due_date,
+      state.payment.deadline,
+      payment.payday
+    );
+    state.message = validate_cpf(client.cpf, state.message);
+    state.message = validate_name(client.name, state.message);
+    state.message = validate_telephone(client.telephone, state.message);
+    state.message = validate_date(
+      payment.payday,
+      payment.deadline,
+      state.message,
+      payment.balance
+    );
+    state.message = validate_address(
+      client.cep,
+      client.street,
+      client.home_num,
+      client.district,
+      state.message
+    );
+    state.error = state.message != "" ? false : true;
     const data = {
       client: client,
       payment: payment,
     };
-
-    if (!error) {
-      routeRegister(data).then(function (data) {
-        history.push("/register");
-      });
+    if (state.error) {
+      routeRegister(data)
+        .then(function (data) {
+          state.client.name = "";
+          state.client.cpf = "";
+          state.client.street = "";
+          state.client.home_num = "";
+          state.client.district = "";
+          state.client.cep = "";
+          state.client.telephone = "";
+          state.client.job = "";
+          state.payment.balance = "";
+          state.payment.payday = "";
+          state.payment.due_date = "";
+          state.payment.deadline = "";
+          history.push("/register");
+        })
+        .catch((err) => {
+          setState({
+            ...state,
+            error: false,
+            message: " Aconteceu um erro Tente Novamente",
+          });
+          history.push("/register");
+        });
+    } else {
+      history.push("/register");
     }
   };
 
@@ -162,17 +195,17 @@ const Register = ({ history }) => {
           </CCard>
         </div>
         <hr className="mt-0" />
-        {state.message && (
-          <CCard className="border-success" style={{ textAlign: "center" }}>
-            {state.message}
-          </CCard>
-        )}
         {state.error && (
-          <CCard className="border-danger" style={{ textAlign: "center" }}>
-            {state.error}
+          <CCard className="border-success" style={{ textAlign: "center" }}>
+            Successs
           </CCard>
         )}
-        <CRow>
+        {!state.error && state.message != "" && (
+          <CCard className="border-danger" style={{ textAlign: "center" }}>
+            Erros :{state.message}
+          </CCard>
+        )}
+        <CRow id="label">
           <CCol xs="12" sm="6">
             <CCard>
               <CCardHeader>
@@ -196,7 +229,6 @@ const Register = ({ history }) => {
                   <CInput
                     placeholder="123.456.789-00"
                     maxLength="14"
-                    name="cpf"
                     value={state.client.cpf}
                     onChange={(e) => handlechange(e)}
                   />
@@ -218,7 +250,6 @@ const Register = ({ history }) => {
                     <CFormGroup>
                       <CLabel>Bairro :</CLabel>
                       <CInput
-                        name="district"
                         placeholder="Cidade Nova"
                         onChange={(e) => {
                           let client = { ...state.client };
@@ -247,7 +278,6 @@ const Register = ({ history }) => {
                       <CLabel>CEP :</CLabel>
                       <CInput
                         maxLength="9"
-                        name="cep"
                         placeholder="12345-678"
                         value={state.client.cep}
                         onChange={(e) => cepChange(e)}
@@ -262,7 +292,6 @@ const Register = ({ history }) => {
                       <CInput
                         type="tel"
                         maxLength="15"
-                        name="tel"
                         value={state.client.telephone}
                         onChange={(e) => telephoneChange(e)}
                         placeholder="(53) 981408183"
@@ -302,6 +331,7 @@ const Register = ({ history }) => {
                         currency="BRL"
                         autoFocus={true}
                         autoSelect={true}
+                        value={state.payment.balance}
                         config={balanceConfig}
                         onChange={moneyChange}
                       />
@@ -310,17 +340,36 @@ const Register = ({ history }) => {
                 </CRow>
                 <CRow>
                   <CCol xs="12">
-                    <CFormGroup>
-                      <CLabel>Vencimento :</CLabel>
-                      <CInput
-                        type="date"
-                        name="due_date"
-                        onChange={(e) => {
-                          let payment = { ...state.payment };
-                          payment.due_date = e.target.value;
-                          setState({ ...state, payment });
-                        }}
-                      />
+                    <CFormGroup row className="my-0">
+                      <CCol xs="6">
+                        <CFormGroup>
+                          <CLabel>Vencimento :</CLabel>
+                          <CInput
+                            type="date"
+                            name="due_date"
+                            onChange={(e) => {
+                              let payment = { ...state.payment };
+                              payment.due_date = e.target.value;
+                              setState({ ...state, payment });
+                            }}
+                          />
+                        </CFormGroup>
+                      </CCol>
+                      <CCol xs="6">
+                        <CFormGroup>
+                          <CLabel>Prazo :</CLabel>
+                          <CInput
+                            type="number"
+                            min="0"
+                            onChange={(e) => {
+                              let payment = { ...state.payment };
+                              payment.deadline = e.target.value;
+                              setState({ ...state, payment });
+                            }}
+                            placeholder="15"
+                          />
+                        </CFormGroup>
+                      </CCol>
                     </CFormGroup>
                   </CCol>
                 </CRow>
@@ -344,7 +393,7 @@ const Register = ({ history }) => {
             </CCard>
           </CCol>
         </CRow>
-        
+
         <div id="divBut">
           <submit type="submit" class="myButton" onClick={() => register()}>
             Registrar

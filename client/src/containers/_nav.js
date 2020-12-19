@@ -3,13 +3,13 @@ export default [
     _tag: "CSidebarNavItem",
     name: "Vencimentos Atuais",
     to: "/list",
-    icon: "cil-puzzle",
+    icon: "cilBellExclamation",
   },
   {
     _tag: "CSidebarNavItem",
     name: "Perquisar",
     to: "/search",
-    icon: "cil-speedometer",
+    icon: "cilSearch",
   },
   {
     _tag: "CSidebarNavItem",

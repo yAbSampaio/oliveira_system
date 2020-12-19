@@ -1,17 +1,14 @@
 #tablesPay {
-  display: inline-flex;
-  position: relative;
-  width: 100%;
-  align-items: center;
-  justify-content: center;
-}
-#tablesPay table {
   font-size: 150%;
   color: black;
-  margin-top: 2%;
   font-family: Helvetica;
   width: 50%;
+  margin-left: 25%;
 }
-#tablesPay table tr td {
-  text-align: center;
+#inp {
+  /* font-size: 150%; */
+  width: 99%;
+  height: 30px;
+  border: 0;
 }
+  

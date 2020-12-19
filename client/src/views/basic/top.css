@@ -36,9 +36,9 @@ td{
 }
 #tables table {
   color: black;
-  margin-top: 2%;
   font-family: Helvetica;
   margin-left: auto;
+  font-size: 200%;
   width: 50%;
 }
 #tables table tr td {
@@ -89,4 +89,7 @@ body{
 }
 .c-wrapper{
   background-color: white;
+}
+#label{
+  font-size: 150%;
 }

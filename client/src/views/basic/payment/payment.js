@@ -1,156 +1,234 @@
 //React
 import React, { useState, useEffect, Component } from "react";
-import { useHistory } from "react-router-dom";
+import { useHistory, useParams } from "react-router-dom";
 //CoreUi
 import {
-  CContainer,
   CCard,
   CRow,
   CCol,
-  CForm,
-  CSelect,
-  CFormText,
-  CListGroup,
-  CListGroupItem,
-  CModal,
-  CModalHeader,
-  CModalBody,
-  CModalFooter,
-  CButton,
+  CCardBody,
+  CCardHeader,
   CLabel,
   CInput,
   CFormGroup,
-  CDropdown,
-  CDropdownItem,
-  CDropdownToggle,
-  CDropdownMenu,
-  CImg,
+  CInputCheckbox,
 } from "@coreui/react";
 //Api
-import { routeRegister } from "../../../util/Api";
-import { cpfMask, telMask, cepMask } from "../mask";
-import {
-  clearString,
-  validate_address,
-  validate_balance,
-  validate_cpf,
-  validate_name,
-  validate_telephone,
-  validate_debt
-} from "../validate";
+import { routePay } from "../../../util/Api";
+import IntlCurrencyInput from "react-intl-currency-input";
+// import { cpfMask, telMask, cepMask } from "../mask";
+import { stow_deadline, stow_debt, stow_debt2, stow_payday } from "../stow";
+import moment from "moment";
+import { validate_date } from "../validate";
 //Style
 import "./payment.css";
 import "../top.css";
 
 const Payment = ({ history }) => {
+  let { id } = useParams();
   const [state, setState] = useState({
-    client: {
-      name: "",
-      cpf: "",
-    },
     payment: {
       balance: "",
       payday: "",
       due_date: "",
+      deadline: "",
     },
     error: "",
     message: "",
+    buy: "",
   });
 
+  const balanceConfig = {
+    locale: "pt-BR",
+    formats: {
+      number: {
+        BRL: {
+          style: "currency",
+          currency: "BRL",
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        },
+      },
+    },
+  };
+
+  const moneyChange = (e, value, maskedValue) => {
+    e.preventDefault();
+    let payment = { ...state.payment };
+    payment.balance = value;
+    setState({ ...state, payment });
+  };
+
   const payAtt = () => {
-    const client = {
-      name: state.client.name,
-      cpf: clearString(state.client.cpf),
-    };
-
+    state.error = "";
+    state.message = "";
     const payment = {
-      balance: validate_debt(state.payment.balance),
-      payday: state.payment.payday,
-      due_date: state.payment.due_date,
+      balance: stow_debt2(state.payment.balance, state.buy),
+      payday: stow_payday(state.payment.payday),
+      deadline: "",
     };
-
-    var error = !validate_balance(payment.balance, payment.payday, payment.due_date);
- 
+    payment.deadline = stow_deadline(
+      state.payment.due_date,
+      state.payment.deadline,
+      payment.payday
+    );
+    state.message = validate_date(
+      payment.payday,
+      payment.deadline,
+      state.message,
+      payment.balance
+    );
+    state.error = state.message != "" ? false : true;
     const data = {
-      client: client,
+      client_id: id,
       payment: payment,
     };
-
-    routeRegister(data).then(function (data) {
-      history.push("/profile");
-    });
-  };
-  const handleClick = (route) => {
-    history.push("/" + route);
+    if (state.error) {
+      routePay(data)
+        .then(function (data) {
+          history.push("/profile");
+        })
+        .catch((err) => {
+          setState({
+            ...state,
+            error: false,
+            message: " Aconteceu um erro Tente Novamente",
+          });
+          history.push("/pay/" + id);
+        });
+    } else {
+      history.push("/pay/" + id);
+    }
   };
   return (
     <div className="register">
       <body>
         <div id="title">
-          <h2>Atualizando Pagamento</h2>
-        </div>
-        {state.message && (
-          <CCard className="border-success" style={{ textAlign: "center" }}>
-            {state.message}
+          <CCard>
+            <CCardHeader>
+              <h2>ATUALIZAR PAGAMENTO</h2>
+            </CCardHeader>
+            <CCardBody></CCardBody>
           </CCard>
-        )}
+        </div>
+        <hr className="mt-0" />
         {state.error && (
-          <CCard className="border-danger" style={{ textAlign: "center" }}>
-            {state.error}
+          <CCard className="border-success" style={{ textAlign: "center" }}>
+            Success
           </CCard>
         )}
-        <div id="tablesPay">
-          <table>
-            <h1>Débito</h1>
-            <tr>
-              <td>Saldo :</td>
-              <td>
-                <CInput
-                  type="number"
-                  name="balance"
-                  placeholder="000.00"
-                  onChange={(e) => {
-                    let payment = { ...state.payment };
-                    payment.balance = e.target.value;
-                    setState({ ...state, payment });
-                  }}
-                ></CInput>
-              </td>
-            </tr>
-            <tr>
-              <td>Vencimento :</td>
-              <td>
-                <CInput
-                  type="date"
-                  name="due_date"
-                  onChange={(e) => {
-                    let payment = { ...state.payment };
-                    payment.due_date = e.target.value;
-                    setState({ ...state, payment });
-                  }}
-                ></CInput>
-              </td>
-            </tr>
-            <tr>
-              <td>Ultima data :</td>
-              <td>
-                <CInput
-                  type="date"
-                  name="payday"
-                  onChange={(e) => {
-                    let payment = { ...state.payment };
-                    payment.payday = e.target.value;
-                    setState({ ...state, payment });
-                  }}
-                ></CInput>
-              </td>
-            </tr>
-          </table>
-        </div>
+        {!state.error && state.message != "" && (
+          <CCard className="border-danger" style={{ textAlign: "center" }}>
+            Erros :{state.message}
+          </CCard>
+        )}
+        <CRow id="tablesPay">
+          <CCol xs="12">
+            <CCard>
+              <CCardHeader>
+                <h5>CONTA</h5>
+              </CCardHeader>
+              <CCardBody>
+                <CRow>
+                  <CCol xs="12">
+                    <CFormGroup row className="my-0">
+                      <CCol xs="8">
+                        <CFormGroup>
+                          <CLabel>Saldo :</CLabel>
+                          <IntlCurrencyInput
+                            id="inp"
+                            currency="BRL"
+                            autoFocus={true}
+                            autoSelect={true}
+                            value={state.payment.balance}
+                            config={balanceConfig}
+                            onChange={moneyChange}
+                          />
+                        </CFormGroup>
+                      </CCol>
+                      <CCol xs="4">
+                        <CLabel>Pagamento ? </CLabel>
+                        <CFormGroup variant="custom-radio" inline>
+                          <CInputCheckbox
+                            custom
+                            id="inline-radio1"
+                            name="inline-radios"
+                            value={1}
+                            onChange={(e) => {
+                              setState({ ...state, buy: e.target.value });
+                            }}
+                          />
+                          <CLabel
+                            variant="custom-checkbox"
+                            htmlFor="inline-radio1"
+                          >
+                            Sim
+                          </CLabel>
+                        </CFormGroup>
+                      </CCol>
+                    </CFormGroup>
+                  </CCol>
+                </CRow>
+                <CRow>
+                  <CCol xs="12">
+                    <CFormGroup row className="my-0">
+                      <CCol xs="6">
+                        <CFormGroup>
+                          <CLabel>Vencimento :</CLabel>
+                          <CInput
+                            type="date"
+                            name="due_date"
+                            onChange={(e) => {
+                              let payment = { ...state.payment };
+                              payment.due_date = e.target.value;
+                              setState({ ...state, payment });
+                            }}
+                          />
+                        </CFormGroup>
+                      </CCol>
+                      <CCol xs="6">
+                        <CFormGroup>
+                          <CLabel>Prazo :</CLabel>
+                          <CInput
+                            type="number"
+                            min="0"
+                            onChange={(e) => {
+                              let payment = { ...state.payment };
+                              payment.deadline = e.target.value;
+                              setState({ ...state, payment });
+                            }}
+                            placeholder="15"
+                          />
+                        </CFormGroup>
+                      </CCol>
+                    </CFormGroup>
+                  </CCol>
+                </CRow>
+                <CRow>
+                  <CCol xs="12">
+                    <CFormGroup>
+                      <CLabel>Ultima data :</CLabel>
+                      <CInput
+                        type="date"
+                        name="payday"
+                        onChange={(e) => {
+                          let payment = { ...state.payment };
+                          payment.payday = e.target.value;
+                          setState({ ...state, payment });
+                        }}
+                      />
+                    </CFormGroup>
+                  </CCol>
+                </CRow>
+              </CCardBody>
+            </CCard>
+          </CCol>
+        </CRow>
+
         <div id="divBut">
-          <CButton class="myButton" onClick={() => payAtt()}>
-            Atualizar
-          </CButton>
+          <submit type="submit" class="myButton" onClick={() => payAtt()}>
+            Editar
+          </submit>
         </div>
       </body>
     </div>
