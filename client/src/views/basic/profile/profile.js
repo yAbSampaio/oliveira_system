@@ -103,7 +103,7 @@ const Profile = ({ history }) => {
   }, []);
 
   return (
-    <div className="search">
+    <div className="profile">
       <div>
         <div id="title">
           <CCard>

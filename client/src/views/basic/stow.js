@@ -1,9 +1,5 @@
 import moment from "moment";
 
-export const clearMoney = (string) => {
-  return parseFloat(string);
-};
-
 // export const stow_date = (due_date, deadline) => {
 //   if (due_date.length !== 0) {
 //     return moment(due_date).format("DD/MM/YYYY");
@@ -37,30 +33,32 @@ export const stow_payday = (payday) => {
   return payday;
 };
 
-export const stow_deadline = (due_date, deadline, payday) => {
+export const stow_deadline = (due_date, deadline, payday, balance) => {
   if (due_date.length !== 0) {
+    console.log("fun");
     if (deadline.length !== 0) {
       return deadline;
     } else {
-      // var today = new Date();
-      // var dat =
-      //   today.getFullYear() +
-      //   "/" +
-      //   (today.getMonth() + 1) +
-      //   "/" +
-      //   today.getDate();
-      // var date = moment(dat);
-      var date = moment(payday);
-      var due = moment(due_date);
-      // console.log(due)
-      const duration = moment.duration(due.diff(date));
-      // console.log(duration.asDays());
-      return duration.asDays();
+      console.log("funf");
+      if (balance == 0) {
+        console.log("funfou");
+        return 0;
+      } else {
+        var date = moment(payday);
+        var due = moment(due_date);
+        // console.log(due)
+        const duration = moment.duration(due.diff(date));
+        console.log(duration.asDays());
+        return Math.floor(duration.asDays());
+        
+      }
     }
   } else {
-    if (deadline.length !== 0 || deadline !== 0) {
+    if (deadline.length !== 0) {
+      console.log(deadline);
       return deadline;
     } else {
+      console.log("f");
       return 0;
     }
   }
@@ -70,7 +68,6 @@ export const stow_debt = (balance) => {
   if (balance === "") {
     return 0;
   } else {
-    balance = clearMoney(balance);
     if (balance > 0) {
       return balance * -1;
     } else {
@@ -83,16 +80,15 @@ export const stow_debt2 = (balance, cond) => {
   if (balance === "") {
     return 0;
   } else {
-    balance = clearMoney(balance);
-    if (cond === 1) {
+    if (cond) {
       if (balance < 0) {
         return balance * -1;
       } else {
         return balance;
       }
-    }else{
+    } else {
       if (balance > 0) {
-        return balance;
+        return balance * -1;
       } else {
         return balance;
       }

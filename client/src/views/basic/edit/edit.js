@@ -58,7 +58,7 @@ const Edit = ({ history }) => {
       telephone: "",
       job: "",
     },
-    error: true,
+    error: "",
     message: "",
   });
   useEffect(() => {
@@ -81,8 +81,10 @@ const Edit = ({ history }) => {
   }, []);
 
   const editClient = () => {
-    state.error = "";
-    state.message = "";
+    setState({
+      ...state, error: "", message: ""
+    })
+    var msg = "";
     const client = {
       name: state.client.name,
       cpf: clearString(state.client.cpf),
@@ -94,35 +96,39 @@ const Edit = ({ history }) => {
       job: state.client.job,
     };
 
-    state.message = validate_cpf(client.cpf, state.message);
-    state.message = validate_name(client.name, state.message);
-    state.message = validate_telephone(client.telephone, state.message);
-    state.message = validate_address(
+    msg = validate_cpf(client.cpf, msg);
+    msg = validate_name(client.name, msg);
+    msg = validate_telephone(client.telephone, msg);
+    msg = validate_address(
       client.cep,
       client.street,
       client.home_num,
       client.district,
-      state.message
+      msg
     );
-    state.error = state.message != "" ? false : true;
+    var err = msg != "" ? false : true;
+    setState({
+      ...state, error: err, message: msg
+    });
+    
     const data = {
       client: client,
+      index: id
     };
+    if (err) {
+      routeEdit(data)
+        .then(function (data) {
+          history.push("/profile/" + id);
+          // history.go(0);
+        })
+        .catch((err) => {
+          setState({
+            ...state,
+            error: false,
+            message: " Aconteceu um erro Tente Novamente",
+          });
 
-    if (state.error) {
-      routeEdit(data).then(function (data) {
-        history.push("/profile");
-      });
-      state.client.name = "";
-      state.client.cpf = "";
-      state.client.street = "";
-      state.client.home_num = "";
-      state.client.district = "";
-      state.client.cep = "";
-      state.client.telephone = "";
-      state.client.job = "";
-    } else {
-      history.push("/edit/" + id);
+        });
     }
   };
 
@@ -159,14 +165,14 @@ const Edit = ({ history }) => {
           </CCard>
         </div>
         <hr className="mt-0" />
-        {!state.error && (
+        {state.error && (
           <CCard className="border-success" style={{ textAlign: "center" }}>
-            {state.message}
+            Successs
           </CCard>
         )}
-        {!state.error && (
+        {!state.error && state.message != "" && (
           <CCard className="border-danger" style={{ textAlign: "center" }}>
-            {state.error}
+            Erros :{state.message}
           </CCard>
         )}
         <CRow id="tablesEdit">

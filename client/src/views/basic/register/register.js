@@ -83,8 +83,10 @@ const Register = ({ history }) => {
   };
 
   const register = () => {
-    state.error = "";
-    state.message = "";
+    setState({
+      ...state, error: "", message: ""
+    })
+    var msg = "";
     const client = {
       name: state.client.name,
       cpf: clearString(state.client.cpf),
@@ -104,45 +106,39 @@ const Register = ({ history }) => {
     payment.deadline = stow_deadline(
       state.payment.due_date,
       state.payment.deadline,
-      payment.payday
-    );
-    state.message = validate_cpf(client.cpf, state.message);
-    state.message = validate_name(client.name, state.message);
-    state.message = validate_telephone(client.telephone, state.message);
-    state.message = validate_date(
       payment.payday,
-      payment.deadline,
-      state.message,
       payment.balance
     );
-    state.message = validate_address(
+    msg = validate_cpf(client.cpf, msg);
+    msg = validate_name(client.name, msg);
+    msg = validate_telephone(client.telephone, msg);
+    msg = validate_date(
+      payment.payday,
+      payment.deadline,
+      msg,
+      payment.balance
+    );
+    msg = validate_address(
       client.cep,
       client.street,
       client.home_num,
       client.district,
-      state.message
+      msg
     );
-    state.error = state.message != "" ? false : true;
+    var err = msg != "" ? false : true;
+    setState({
+      ...state, error: err, message: msg
+    });
     const data = {
       client: client,
       payment: payment,
     };
-    if (state.error) {
+    if (err) {
       routeRegister(data)
         .then(function (data) {
-          state.client.name = "";
-          state.client.cpf = "";
-          state.client.street = "";
-          state.client.home_num = "";
-          state.client.district = "";
-          state.client.cep = "";
-          state.client.telephone = "";
-          state.client.job = "";
-          state.payment.balance = "";
-          state.payment.payday = "";
-          state.payment.due_date = "";
-          state.payment.deadline = "";
-          history.push("/register");
+          console.log(data);
+          
+          window.location.reload();
         })
         .catch((err) => {
           setState({
@@ -150,11 +146,8 @@ const Register = ({ history }) => {
             error: false,
             message: " Aconteceu um erro Tente Novamente",
           });
-          history.push("/register");
         });
-    } else {
-      history.push("/register");
-    }
+    } 
   };
 
   const handlechange = (e) => {
@@ -300,9 +293,8 @@ const Register = ({ history }) => {
                   </CCol>
                   <CCol xs="6">
                     <CFormGroup>
-                      <CLabel>Trabalho :</CLabel>
+                      <CLabel>Observações :</CLabel>
                       <CInput
-                        name="job"
                         onChange={(e) => {
                           let client = { ...state.client };
                           client.job = e.target.value;

@@ -23,17 +23,11 @@
   font-size: 120%;
 }
 
-#list {
-  font-family: Helvetica;
-  width: 100%;
-  /* height: 100%; */
-  font-size: 205%;
-  border-color: black;
-  border-style: solid;
-  border-width: medium;
-  border-right: none;
-  border-left: none;
-  border-top: none;
+#tamanho {
+  font-size: 150%;
+}
+#outros {
+  font-size: 125%;
 }
 
 #head {

@@ -24,6 +24,7 @@ import { validate_date } from "../validate";
 import "./payment.css";
 import "../top.css";
 
+// const history = useHistory()
 const Payment = ({ history }) => {
   let { id } = useParams();
   const [state, setState] = useState({
@@ -35,7 +36,7 @@ const Payment = ({ history }) => {
     },
     error: "",
     message: "",
-    buy: "",
+    buy: false,
   });
 
   const balanceConfig = {
@@ -60,33 +61,43 @@ const Payment = ({ history }) => {
   };
 
   const payAtt = () => {
-    state.error = "";
-    state.message = "";
+    setState({
+      ...state, error: "", message: ""
+    })
+    var msg = "";
     const payment = {
       balance: stow_debt2(state.payment.balance, state.buy),
       payday: stow_payday(state.payment.payday),
       deadline: "",
     };
+    console.log(payment.balance);
     payment.deadline = stow_deadline(
       state.payment.due_date,
       state.payment.deadline,
-      payment.payday
-    );
-    state.message = validate_date(
       payment.payday,
-      payment.deadline,
-      state.message,
       payment.balance
     );
-    state.error = state.message != "" ? false : true;
+    msg = validate_date(
+      payment.payday,
+      payment.deadline,
+      msg,
+      payment.balance
+    );
+    var err = msg != "" ? false : true;
+    setState({
+      ...state, error: err, message: msg
+    });
+    
     const data = {
       client_id: id,
       payment: payment,
     };
-    if (state.error) {
+    if (err) {
+      console.log(data)
       routePay(data)
         .then(function (data) {
-          history.push("/profile");
+          history.push("/profile/" + id);
+          history.go(0)
         })
         .catch((err) => {
           setState({
@@ -94,10 +105,7 @@ const Payment = ({ history }) => {
             error: false,
             message: " Aconteceu um erro Tente Novamente",
           });
-          history.push("/pay/" + id);
         });
-    } else {
-      history.push("/pay/" + id);
     }
   };
   return (
@@ -148,19 +156,19 @@ const Payment = ({ history }) => {
                       </CCol>
                       <CCol xs="4">
                         <CLabel>Pagamento ? </CLabel>
-                        <CFormGroup variant="custom-radio" inline>
+                        <CFormGroup variant="custom-checkbox"  inline>
                           <CInputCheckbox
                             custom
-                            id="inline-radio1"
-                            name="inline-radios"
-                            value={1}
-                            onChange={(e) => {
-                              setState({ ...state, buy: e.target.value });
+                            id="inline"
+                            name="inline"
+                            value={true}
+                            onClick={(e) => {
+                              setState({ ...state, buy: e.target.checked });
                             }}
                           />
                           <CLabel
                             variant="custom-checkbox"
-                            htmlFor="inline-radio1"
+                            htmlFor="inline"
                           >
                             Sim
                           </CLabel>
