@@ -45,17 +45,21 @@ const Search = React.lazy(()=> import("./views/basic/search/search"))
 const Register = React.lazy(()=> import("./views/basic/register/register"))
 const Edit = React.lazy(() => import('./views/basic/edit/edit'))
 const Dues = React.lazy(() => import('./views/basic/list/list'))
+const Paid = React.lazy(() => import('./views/basic/paid/paid'))
 const Profile = React.lazy(() => import('./views/basic/profile/profile')) 
 const Payment = React.lazy(() => import('./views/basic/payment/payment'))
+const Balance = React.lazy(() => import('./views/basic/balance/balance'))
 
 const routes = [
   // { path: '/', exact: true, name: 'Home' },
   {path: "/edit/:id", name: "Edit", component: Edit},
   {path: "/list",  exact: true, name: "Dues", component: Dues},
+  {path: "/paid",  exact: true, name: "Paid", component: Paid},
   {path: "/search", name: "Search", component: Search},
   {path: "/register", name: "registerUser", component: Register},
   {path: "/profile/:id", name: "Profile", component: Profile},
   {path: "/pay/:id", name: "Payment", component: Payment},
+  {path: "/balance", name: "Balance", component: Balance},
   // { path: '/dashboard', name: 'Dashboard', component: Dashboard },
   // { path: '/theme', name: 'Theme', component: Colors, exact: true },
   // { path: '/theme/colors', name: 'Colors', component: Colors },

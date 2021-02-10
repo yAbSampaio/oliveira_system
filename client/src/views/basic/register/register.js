@@ -42,6 +42,7 @@ import {
   validate_telephone,
   validate_debt,
 } from "../validate";
+import { confirmAlert } from "react-confirm-alert"; // Import
 //Style
 import "./register.css";
 import "../top.css";
@@ -126,9 +127,7 @@ const Register = ({ history }) => {
       msg
     );
     var err = msg != "" ? false : true;
-    setState({
-      ...state, error: err, message: msg
-    });
+    
     const data = {
       client: client,
       payment: payment,
@@ -137,10 +136,13 @@ const Register = ({ history }) => {
       routeRegister(data)
         .then(function (data) {
           console.log(data);
-          
+          setState({
+            ...state, error: err, message: msg
+          });
           window.location.reload();
         })
         .catch((err) => {
+          console.log(err); 
           setState({
             ...state,
             error: false,

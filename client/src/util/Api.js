@@ -48,8 +48,35 @@ export const routeListClient = (data) => {
   );
 };
 
+export const routeListLiqui = (data) => {
+  return axios.post(API_URL + "/listQuit",data).then(
+    function (res) {
+      let data = res.data;
+      return data;
+    }.bind(this)
+  );
+};
+
 export const routeSearchClient = (data) => {
   return axios.post(API_URL + "/getSearch",data).then(
+    function (res) {
+      let data = res.data;
+      return data;
+    }.bind(this)
+  );
+};
+
+export const routeHistoric = (data) => {
+  return axios.post(API_URL + "/getHistoric",data).then(
+    function (res) {
+      let data = res.data;
+      return data;
+    }.bind(this)
+  );
+};
+
+export const routeBalance = (data) => {
+  return axios.post(API_URL + "/getBalance",data).then(
     function (res) {
       let data = res.data;
       return data;

@@ -15,15 +15,42 @@ app.get('/ping', (req, res) => {
 
 app.post('/list', (req, res) => {
   try {
+    // var sql = `SELECT idk.id, idk.name, idk.street, idk.home_num, idk.district, idk.payday,idk.due_date, idk.balance FROM
+    //           (SELECT DISTINCT ON (c.id) c.id, c.name, c.street, c.home_num, c.district, p.payday, p.payday + interval '1' DAY * p.deadline AS due_date,
+    //           (SELECT SUM(p.balance) FROM payments AS p WHERE p.client_id = c.id) AS balance FROM payments AS p
+    //           INNER JOIN clients AS c ON (p.client_id = c.id)
+
+    //           ORDER BY c.id ,due_date DESC) AS idk ORDER BY due_date DESC`;
+
     var sql = `SELECT idk.id, idk.name, idk.street, idk.home_num, idk.district, idk.payday,idk.due_date, idk.balance FROM 
-              (SELECT DISTINCT ON (c.id) c.id, c.name, c.street, c.home_num, c.district, p.payday, p.payday + interval '1' DAY * p.deadline AS due_date, 
-              (SELECT SUM(p.balance) FROM payments AS p WHERE p.client_id = c.id) AS balance FROM payments AS p 
-              INNER JOIN clients AS c ON (p.client_id = c.id) 
-              
-              ORDER BY c.id ,due_date DESC) AS idk ORDER BY due_date DESC`;
-    //WHERE DATE(p.payday + interval '1' DAY * p.deadline) <= DATE(now())
-    // var sql =
-    //   "SELECT c.id, c.name,c.cpf,c.street,c.home_num,c.district,(SELECT SUM(p.balance) FROM payments AS p WHERE p.client_id = c.id) AS balance FROM clients AS c LEFT JOIN payments AS p ON c.id = p.client_id WHERE DATE(p.payday + interval'1'DAY*p.deadline) <= DATE(now()) GROUP BY c.id ORDER BY (SELECT p.payday FROM payments AS p WHERE c.id = p.client_id ORDER BY p.payday DESC LIMIT 1) + interval'1'DAY*(SELECT p.deadline FROM payments AS p WHERE c.id = p.client_id ORDER BY p.payday DESC LIMIT 1) DESC";
+      (SELECT DISTINCT ON (c.id) c.id, c.name, c.street, c.home_num, c.district, p.payday, p.payday + interval '1' DAY * p.deadline AS due_date, 
+      (SELECT SUM(p.balance) FROM payments AS p WHERE p.client_id = c.id) AS balance FROM payments AS p 
+      INNER JOIN clients AS c ON (p.client_id = c.id)              
+      ORDER BY c.id ,due_date DESC) AS idk WHERE DATE(due_date) <= DATE(now()) AND balance != '0' ORDER BY due_date DESC `;
+    pool.query(sql).then((response) => {
+      // console.log(response.rows);
+      res.status(201).json(response.rows);
+    });
+  } catch (err) {
+    console.error(err.message);
+  }
+});
+
+
+app.post('/listQuit', (req, res) => {
+  try {
+    // var sql = `SELECT idk.id, idk.name, idk.street, idk.home_num, idk.district, idk.payday,idk.due_date, idk.balance FROM
+    //           (SELECT DISTINCT ON (c.id) c.id, c.name, c.street, c.home_num, c.district, p.payday, p.payday + interval '1' DAY * p.deadline AS due_date,
+    //           (SELECT SUM(p.balance) FROM payments AS p WHERE p.client_id = c.id) AS balance FROM payments AS p
+    //           INNER JOIN clients AS c ON (p.client_id = c.id)
+
+    //           ORDER BY c.id ,due_date DESC) AS idk ORDER BY due_date DESC`;
+
+    var sql = `SELECT idk.id, idk.name, idk.street, idk.home_num, idk.district, idk.payday,idk.due_date, idk.balance FROM 
+      (SELECT DISTINCT ON (c.id) c.id, c.name, c.street, c.home_num, c.district, p.payday, p.payday + interval '1' DAY * p.deadline AS due_date, 
+      (SELECT SUM(p.balance) FROM payments AS p WHERE p.client_id = c.id) AS balance FROM payments AS p 
+      INNER JOIN clients AS c ON (p.client_id = c.id)              
+      ORDER BY c.id ,due_date DESC) AS idk WHERE balance = '0' ORDER BY due_date DESC `;
     pool.query(sql).then((response) => {
       // console.log(response.rows);
       res.status(201).json(response.rows);
@@ -68,7 +95,12 @@ app.post('/registerClient', (req, res) => {
           })
           .catch((e) => console.error(e.stack));
       })
-      .catch((e) => console.error(e.stack));
+      .catch((e) => {
+        console.log(e.message);
+        res.status(504).json({
+        Teste: e.message
+        })
+      });
   } catch (err) {
     console.error(err.message);
   }
@@ -123,6 +155,7 @@ app.post('/profile/edit', (req, res) => {
 app.post('/getSearch', (req, res) => {
   try {
     const { search, index } = req.body;
+    // const auxSearch = ['error','c.cpf','c.name','error','c.street','c.district','c.job']
     //console.log(req.body)
     switch (index) {
       case 1:
@@ -221,6 +254,38 @@ app.post('/addPayment', (req, res) => {
         res.status(201).json({ status: 1 });
       })
       .catch((e) => console.error(e.stack));
+  } catch (err) {
+    console.error(err.message);
+  }
+});
+
+app.post('/getHistoric', (req, res) => {
+  try {
+    const { id } = req.body;
+    // console.log(id);
+    var sql = `SELECT p.client_id, p.payday, p.balance, p.payday + interval '1' DAY * p.deadline AS due_date 
+    FROM payments AS p WHERE p.client_id = $1 ORDER BY payday`;
+    var values = [id];
+    pool.query(sql, values).then((re) => {
+      res.status(201).json(re.rows);
+    });
+  } catch (err) {
+    console.error(err.message);
+  }
+});
+
+app.post('/getBalance', (req, res) => {
+  try {
+    const { mouth, year, day } = req.body;
+    const  date1  = year + "-" + mouth + "-" + 1;
+    const  date2  = year + "-" + mouth + "-" + day;
+    // console.log(date1)
+    var sql = `SELECT p.client_id, p.payday, p.balance 
+    FROM payments AS p WHERE p.payday >=  $1 AND p.payday <= $2 ORDER BY payday`;
+    var values = [date1, date2];
+    pool.query(sql, values).then((re) => {
+      res.status(201).json(re.rows);
+    });
   } catch (err) {
     console.error(err.message);
   }

@@ -31,11 +31,14 @@ import {
 } from "@coreui/react";
 //Api
 import { cpfMask } from "../mask";
-import { routeGetClient } from "../../../util/Api";
+import { routeGetClient, routeHistoric } from "../../../util/Api";
 import moment from "moment";
+import { alert } from "../../../util/alertApi";
 //Style
 import "./profile.css";
 import "../top.css";
+import "react-confirm-alert/src/react-confirm-alert.css"; // Import css
+import { confirmAlert } from "react-confirm-alert"; // Import
 
 const Profile = ({ history }) => {
   let { id } = useParams();
@@ -43,6 +46,7 @@ const Profile = ({ history }) => {
   const [state, setState] = useState({
     cpf: "",
     fetched: false,
+    List: [],
     client: {
       name: "",
       cpf: "",
@@ -70,6 +74,81 @@ const Profile = ({ history }) => {
     history.push("/" + route);
   };
 
+  const NewDate = (data) => {
+    var today = new Date();
+    var date = moment(today);
+    var Lista = new Array(0);
+
+    // console.log(Lista);
+    for (let index = 0; index < data.length; index++) {
+      // console.log(date);
+
+      var hist = {
+        payday: "",
+        balance: "",
+        due_date: "",
+      };
+      hist.payday =  moment(data[index].payday).format("DD/MM/YYYY");
+      if (data[index].balance == 0 && index !== 0) {
+        hist.balance = "Adiou";  
+      }
+      else{
+        hist.balance = data[index].balance;
+      }
+      hist.due_date = moment(data[index].due_date).format("DD/MM/YYYY");
+
+      Lista.push(hist);
+      
+    }
+    
+    pop(Lista);
+    return Lista;
+  };
+
+  const pop = (dataLis) => {
+    
+    confirmAlert({
+      customUI: ({ onClose }) => {
+        return (
+          <div className="custom-ui">
+            <h1>Historico</h1>
+            <table
+              className="table table-hover table-outline mb-0 d-none d-sm-table"
+              id="list"
+            >
+              <thead className="thead-light">
+                <th>Data Inicial: </th>
+                <th>Valor: </th>
+                <th>Vencimento: </th>
+              </thead>
+              {dataLis.map((info, index) => (
+                <tbody>
+                  <tr>
+                    <td> {info.payday} </td>
+                    <td>{info.balance}</td>
+                    <td>{info.due_date} </td>
+                  </tr>
+                </tbody>
+              ))}
+            </table>
+            <button class="myBut" onClick={onClose}>Sair</button>
+          </div>
+        );
+      },
+    });
+  };
+
+  const historic = () => {
+    var data = { id };
+    routeHistoric(data).then(function (data) {
+      // console.log(data);
+      setState({
+        ...state,
+        List: NewDate(data),
+      });
+    });
+    };
+
   useEffect(() => {
     if (!state.fetched) {
       var data = { id };
@@ -96,9 +175,9 @@ const Profile = ({ history }) => {
           payday: payday,
           due_date: due_date,
         };
-
         setState({ ...state, fetched: true, client, payment });
       });
+      
     }
   }, []);
 
@@ -160,7 +239,7 @@ const Profile = ({ history }) => {
                       </td>
                     </tr>
                     <tr>
-                      <td>Trabalho :</td>
+                      <td>Observações :</td>
                       <td>{state.client.job}</td>
                     </tr>
                   </tbody>
@@ -198,6 +277,9 @@ const Profile = ({ history }) => {
           </CButton>
           <CButton onClick={() => handleClick("pay/" + id)} class="myButton">
             Pagamento
+          </CButton>
+          <CButton onClick={() => historic()} class="myButton">
+            Historico
           </CButton>
         </div>
       </div>

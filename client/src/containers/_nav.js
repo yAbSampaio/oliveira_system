@@ -16,6 +16,18 @@ export default [
     name: "Cadastrar",
     to: "/register",
     icon: "cil-pencil",
+  },
+  {
+    _tag: "CSidebarNavItem",
+    name: "Liquidados",
+    to: "/paid",
+    icon: "cil-chart-pie",
+  },
+  {
+    _tag: "CSidebarNavItem",
+    name: "Vendas",
+    to: "/balance",
+    icon: "cil-speedometer",
   }
   
   // {

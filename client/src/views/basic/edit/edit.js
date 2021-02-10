@@ -96,7 +96,7 @@ const Edit = ({ history }) => {
       job: state.client.job,
     };
 
-    msg = validate_cpf(client.cpf, msg);
+    // msg = validate_cpf(client.cpf, msg);
     msg = validate_name(client.name, msg);
     msg = validate_telephone(client.telephone, msg);
     msg = validate_address(
@@ -278,7 +278,7 @@ const Edit = ({ history }) => {
                   </CCol>
                   <CCol xs="6">
                     <CFormGroup>
-                      <CLabel>Trabalho :</CLabel>
+                      <CLabel>Observações :</CLabel>
                       <CInput
                         name="job"
                         value={state.client.job}

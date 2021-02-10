@@ -12,47 +12,29 @@ import {
   CDataTable,
 } from "@coreui/react";
 //Api
-import { routeListClient } from "../../../util/Api";
+import { routeListClient, routeListLiqui } from "../../../util/Api";
 import { cpfMask, telMask, cepMask, moneyMask } from "../mask";
 import moment from "moment";
 
 //Style
-import "./list.css";
+import "./paid.css";
 import "../top.css";
 
-const DueDate = ({ history }) => {
+const Paid = ({ history }) => {
   const [state, setState] = useState({
     fetched: false,
     clientList: [],
-    parameter: 0,
     today: "",
     fields: ["Nome", "Vencimento", "Endereço", "Divida", "Mais-Info"],
     list_check: false,
   });
 
   const getBadge = (due) => {
-    var today = new Date();
-    today = moment(today);
-
-    const duration = moment.duration(today.diff(due));
-
-    var days = duration.asDays();
-    if (days <= 5) {
-      return "success";
-    }
-    if (days >= 30) {
-      return "danger";
-    } else {
-      return "warning";
-    }
+    return "success";
   };
   const handleClick = (id) => {
     history.push("/profile/" + id);
   };
-  const quit = () =>{
-    
-  }
-
   const NewDate = (data) => {
     var today = new Date();
     var date = moment(today);
@@ -61,34 +43,32 @@ const DueDate = ({ history }) => {
     // console.log(Lista);
     for (let index = 0; index < data.length; index++) {
       // console.log(date);
-  
-      // if (moment(data[index].due_date) > date || data[index].balance === 0) {
-      //   console.log("teste" + data[index].due_date)
+      // if (moment(data[index].due_date) > date || data[index].balance !== 0) {
       //   var teste = 0;
       // } else {
-        var cliente = {
-          Id: "",
-          Nome: "",
-          // Cpf: "",
-          Vencimento: "",
-          Endereço: "",
-          Divida: "",
-          Perfil: "",
-        };
-        cliente.Id = data[index].id;
-        cliente.Nome = data[index].name;
-        // cliente.Cpf = data[index].cpf;
-        cliente.Vencimento = moment(data[index].due_date);
-        cliente.Endereço =
-          data[index].street +
-          ", " +
-          data[index].home_num +
-          ", " +
-          data[index].district;
-        cliente.Divida = -1 * data[index].balance;
-        // console.log(cliente);
-        Lista.push(cliente);
-        // console.log(Lista);
+      var cliente = {
+        Id: "",
+        Nome: "",
+        // Cpf: "",
+        Vencimento: "",
+        Endereço: "",
+        Divida: "",
+        Perfil: "",
+      };
+      cliente.Id = data[index].id;
+      cliente.Nome = data[index].name;
+      // cliente.Cpf = data[index].cpf;
+      cliente.Vencimento = moment(data[index].due_date);
+      cliente.Endereço =
+        data[index].street +
+        ", " +
+        data[index].home_num +
+        ", " +
+        data[index].district;
+      cliente.Divida = -1 * data[index].balance;
+      // console.log(cliente);
+      Lista.push(cliente);
+      // console.log(Lista);
       // }
     }
     // console.log(Lista);
@@ -99,7 +79,7 @@ const DueDate = ({ history }) => {
       var today = new Date();
       var date = moment(today).format("DD/MM/YYYY");
       var data = { today: date };
-      routeListClient(data).then(function (data) {
+      routeListLiqui(data).then(function (data) {
         setState({
           ...state,
           fetched: true,
@@ -114,7 +94,7 @@ const DueDate = ({ history }) => {
   }, []);
 
   return (
-    <div className="dueDate">
+    <div className="paid">
       <body>
         <div id="title">
           <CCard>
@@ -163,7 +143,6 @@ const DueDate = ({ history }) => {
                     items={state.clientList}
                     fields={state.fields}
                     tableFilter
-                    columnFilter
                     footer
                     striped
                     itemsPerPageSelect
@@ -179,12 +158,11 @@ const DueDate = ({ history }) => {
                               id="outros"
                               shape="square"
                               size="sm"
-                              
                               onClick={() => {
                                 handleClick(item.Id);
                               }}
                             >
-                              Perfil
+                            Perfil
                             </CButton>
                           </td>
                         );
@@ -205,17 +183,13 @@ const DueDate = ({ history }) => {
                     }}
                   />
                 ) : null}
-                
               </CCardBody>
             </CCard>
-            
           </CCol>
-          
         </CRow>
-        
       </body>
     </div>
   );
 };
 
-export default DueDate;
+export default Paid;

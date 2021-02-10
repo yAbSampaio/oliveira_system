@@ -85,19 +85,20 @@ export const validate_date = (payday, deadline, message, balance) => {
   }
   if (balance === 0) {
     var today = new Date();
-    var dat =
-      today.getFullYear() +
-      "-" +
-      (today.getMonth() + 1) +
-      "-" +
-      today.getDate();
-    if (payday === dat) {
-      return message + " -> Saldo inválido";
-    } else {
+    // var dat =
+    //   today.getFullYear() +
+    //   "-" +
+    //   (today.getMonth() + 1) +
+    //   "-" +
+    //   today.getDate();
+    // if (payday === dat) {
+    //   return message + " -> Saldo inválido";
+    // } else {
       return message;
-    }
+    // }
   } else {
     if (deadline === 0) {
+      
       return message + " -> Prazo inválido";
     } else {
       return message;

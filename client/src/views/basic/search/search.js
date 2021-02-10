@@ -48,8 +48,10 @@ const Search = ({ history }) => {
     due_date: "",
     district: "",
     job: "",
+    inpTxt: "",
+    case: "",
     input_check: false,
-    fields: ["Nome", "Vencimento", "Endereço", "Divida", "Mais-Info"],
+    fields: ["Nome", "Vencimento", "Endereço", "Divida", "Perfil"],
     client_list: [],
     list_check: false,
   });
@@ -61,7 +63,7 @@ const Search = ({ history }) => {
     const duration = moment.duration(today.diff(due));
 
     var days = duration.asDays();
-    if (days <= 1) {
+    if (days <= 3) {
       return "success";
     }
     if (days >= 30) {
@@ -71,7 +73,7 @@ const Search = ({ history }) => {
     }
   };
   const handlechange = (e) => {
-    setState({ ...state, cpf: cpfMask(e.target.value) });
+    setState({ ...state, cpf: cpfMask(e.target.value), inpTxt: cpfMask(e.target.value), case: 1 });
   };
 
   const handleClick = (id) => {
@@ -79,10 +81,7 @@ const Search = ({ history }) => {
     history.go(0);
   };
   const NewDate = (data) => {
-    // console.log(data);
     var Lista = new Array(0);
-
-    // console.log(Lista);
     for (let index = 0; index < data.length; index++) {
       var cliente = {
         Id: "",
@@ -94,7 +93,6 @@ const Search = ({ history }) => {
       };
       cliente.Id = data[index].id;
       cliente.Nome = data[index].name;
-      // cliente.Cpf = data[index].cpf;
       cliente.Vencimento = moment(data[index].due_date);
       cliente.Endereço =
         data[index].street +
@@ -103,39 +101,45 @@ const Search = ({ history }) => {
         ", " +
         data[index].district;
       cliente.Divida = -1 * data[index].balance;
-      // console.log(cliente);
       Lista.push(cliente);
-      // console.log(Lista);
     }
-    console.log(Lista);
+    // console.log(Lista);
     return Lista;
   };
   const researched = () => {
+    console.log(state.inpTxt)
     if (state.cpf != "") {
-      var index = 1;
+      var index = state.case;
       var search = clearString(state.cpf);
       state.cpf = "";
+      state.inpTxt = "";
       state.input_check = true;
-    } else if (state.name != "") {
-      var index = 2;
-      var search = state.name;
+    } else if (state.inpTxt != "") {
+      var index = state.case;
+      var search = state.inpTxt;
+      console.log(search)
+      state.inpTxt = "";
       state.input_check = true;
-    } else if (state.due_date != "") {
-      var index = 3;
-      var search = state.due_date;
-      state.input_check = true;
-    } else if (state.street != "") {
-      var index = 4;
-      var search = state.street;
-      state.input_check = true;
-    } else if (state.district != "") {
-      var index = 5;
-      var search = state.district;
-      state.input_check = true;
-    }  else if (state.job != "") {
-      var index = 6;
-      var search = state.job;
-      state.input_check = true;
+    // } else if (state.due_date != "") {
+    //   var index = 3;
+    //   var search = state.due_date;
+    //   state.due_date = "";
+    //   state.input_check = true;
+    // } else if (state.street != "") {
+    //   var index = 4;
+    //   var search = state.street;
+    //   state.street = "";
+    //   state.input_check = true;
+    // } else if (state.district != "") {
+    //   var index = 5;
+    //   var search = state.district;
+    //   state.district = "";
+    //   state.input_check = true;
+    // }  else if (state.job != "") {
+    //   var index = 6;
+    //   var search = state.job;
+    //   state.job = "";
+    //   state.input_check = true;
     }  else {
       state.input_check = false;
     }
@@ -144,10 +148,8 @@ const Search = ({ history }) => {
       var data = { index, search };
       console.log(data);
       routeSearchClient(data).then(function (data) {
-        console.log(data);
-        // if (data.length > 0) {
+        // console.log(data);
         setState({ ...state, client_list: NewDate(data), list_check: true });
-        // }
       });
     }
   };
@@ -191,9 +193,9 @@ const Search = ({ history }) => {
                           type="text"
                           name="nome"
                           placeholder="Thiago Jasen Sampaio"
-                          value={state.name}
+                          // value={state.inpTxt}
                           onChange={(e) => {
-                            setState({ ...state, name: e.target.value });
+                            setState({ ...state, inpTxt: e.target.value, case: 2 });
                           }}
                         />
                       </CFormGroup>
@@ -205,7 +207,7 @@ const Search = ({ history }) => {
                           type="date"
                           name="due_date"
                           onChange={(e) => {
-                            setState({ ...state, due_date: e.target.value });
+                            setState({ ...state, inpTxt: e.target.value, case: 3 });
                           }}
                         />
                       </CFormGroup>
@@ -218,9 +220,9 @@ const Search = ({ history }) => {
                           type="text"
                           name="street"
                           placeholder="Elmer Lawsorense"
-                          value={state.street}
+                          // value={state.inpTxt}
                           onChange={(e) => {
-                            setState({ ...state, street: e.target.value });
+                            setState({ ...state, inpTxt: e.target.value, case: 4 });
                           }}
                         />
                       </CFormGroup>
@@ -235,9 +237,9 @@ const Search = ({ history }) => {
                           type="text"
                           name="district"
                           placeholder="Cidade Nova"
-                          value={state.district}
+                          // value={state.district}
                           onChange={(e) => {
-                            setState({ ...state, district: e.target.value });
+                            setState({ ...state, inpTxt: e.target.value, case: 5 });
                           }}
                         />
                       </CFormGroup>
@@ -252,7 +254,7 @@ const Search = ({ history }) => {
                           placeholder="Trabalho ou Erros"
                           value={state.job}
                           onChange={(e) => {
-                            setState({ ...state, job: e.target.value });
+                            setState({ ...state, inpTxt: e.target.value, case: 6 });
                           }}
                         />
                       </CFormGroup>
@@ -261,6 +263,7 @@ const Search = ({ history }) => {
                   <submit
                     type="submit"
                     class="Button"
+                    
                     onClick={() => researched()}
                   >
                     Procurar
@@ -277,37 +280,6 @@ const Search = ({ history }) => {
                 <h2>Clientes</h2>
               </CCardHeader>
               <CCardBody>
-                {/* <table
-                  className="table table-hover table-outline mb-0 d-none d-sm-table"
-                  id="list"
-                >
-                  {state.list_check ? (
-                    <thead className="thead-light">
-                      <th>Nome: </th>
-                      <th>CPF: </th>
-                      <th>Endereço: </th>
-                      <th>Divida: </th>
-                    </thead>
-                  ) : null}
-                  {state.client_list.map((client, index) => (
-                    <tbody>
-                      <tr onClick={() => handleClick(client.id)}>
-                        <td> {client.name} </td>
-                        <td>
-                          {" "}
-                          {client.cpf.substring(0, 3)}.
-                          {client.cpf.substring(3, 6)}.
-                          {client.cpf.substring(6, 9)}-{client.cpf.substring(9)}{" "}
-                        </td>
-                        <td>
-                          {" "}
-                          {client.street}, {client.home_num}, {client.district}
-                        </td>
-                        <td> R$ {client.balance * -1} </td>
-                      </tr>
-                    </tbody>
-                  ))}
-                </table> */}
                 {state.list_check ? (
                   <CDataTable
                     items={state.client_list}
@@ -319,7 +291,7 @@ const Search = ({ history }) => {
                     itemsPerPage={10}
                     pagination
                     scopedSlots={{
-                      "Mais-Info": (item, index) => {
+                      "Perfil": (item, index) => {
                         return (
                           <td className="py-2">
                             <CButton
@@ -332,7 +304,7 @@ const Search = ({ history }) => {
                                 handleClick(item.Id);
                               }}
                             >
-                              Info
+                              Perfil
                             </CButton>
                           </td>
                         );
