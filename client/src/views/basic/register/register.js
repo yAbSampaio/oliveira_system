@@ -85,8 +85,10 @@ const Register = ({ history }) => {
 
   const register = () => {
     setState({
-      ...state, error: "", message: ""
-    })
+      ...state,
+      error: "",
+      message: "",
+    });
     var msg = "";
     const client = {
       name: state.client.name,
@@ -113,12 +115,7 @@ const Register = ({ history }) => {
     msg = validate_cpf(client.cpf, msg);
     msg = validate_name(client.name, msg);
     msg = validate_telephone(client.telephone, msg);
-    msg = validate_date(
-      payment.payday,
-      payment.deadline,
-      msg,
-      payment.balance
-    );
+    msg = validate_date(payment.payday, payment.deadline, msg, payment.balance);
     msg = validate_address(
       client.cep,
       client.street,
@@ -127,29 +124,39 @@ const Register = ({ history }) => {
       msg
     );
     var err = msg != "" ? false : true;
-    
+
     const data = {
       client: client,
       payment: payment,
     };
+    console.log(msg);
+    console.log(err);
+    console.log(data);
     if (err) {
       routeRegister(data)
         .then(function (data) {
           console.log(data);
           setState({
-            ...state, error: err, message: msg
+            ...state,
+            error: err,
+            message: msg,
           });
           window.location.reload();
         })
         .catch((err) => {
-          console.log(err); 
+          console.log(err);
           setState({
             ...state,
             error: false,
             message: " Aconteceu um erro Tente Novamente",
           });
         });
-    } 
+    }
+    setState({
+      ...state,
+      error: err,
+      message: msg,
+    });
   };
 
   const handlechange = (e) => {

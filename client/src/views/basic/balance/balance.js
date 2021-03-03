@@ -66,16 +66,16 @@ const Profile = ({ history }) => {
       "Novembro",
       "Dezembro",
     ],
-    aux: [0,31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31],
+    aux: [0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31],
   });
   const handleClick = (route) => {
     history.push("/" + route);
   };
 
-  const NewDate = (data, number,aux) => {
+  const NewDate = (data, number, aux) => {
     var buy = [0, 0, 0, 0, 0];
     var sell = [0, 0, 0, 0];
-    var date = state.year + "-" + (aux) + "-" + 1; //aarumar logica number e accu e passar como pARAMETRO
+    var date = state.year + "-" + aux + "-" + 1; //aarumar logica number e accu e passar como pARAMETRO
     // console.log(date)
     var day = moment(date);
     for (let i = 0; i < data.length; i++) {
@@ -98,10 +98,16 @@ const Profile = ({ history }) => {
           case -300:
             sell[0] += 1;
             break;
+          case -290:
+            sell[0] += 1;
+            break;
           case -400:
             sell[1] += 1;
             break;
           case -450:
+            sell[2] += 1;
+            break;
+          case -430:
             sell[2] += 1;
             break;
 
@@ -111,7 +117,7 @@ const Profile = ({ history }) => {
         }
       }
     }
-    
+
     if (
       (state.mouth == 1 && number == -1) ||
       (state.mouth == 12 && number == 1)
@@ -121,21 +127,23 @@ const Profile = ({ history }) => {
       } else {
         var mou = 12;
       }
-    }else{
+    } else {
       var mou = state.mouth + number;
     }
-    
-    setState({ ...state, Vendas: sell, Lucros: buy,  mouth: mou});
+
+    setState({ ...state, Vendas: sell, Lucros: buy, mouth: mou });
   };
 
   const NewMouth = (number) => {
     var today = new Date();
     // console.log(state.mouth)
     // console.log(number)
-    if (state.mouth+number > (state.today.getMonth()+1) && (state.year == state.today.getFullYear())) {
+    if (
+      state.mouth + number > state.today.getMonth() + 1 &&
+      state.year == state.today.getFullYear()
+    ) {
       var Aux = false;
-    }
-    else if (
+    } else if (
       (state.mouth == 1 && number == -1) ||
       (state.mouth == 12 && number == 1)
     ) {
@@ -146,8 +154,8 @@ const Profile = ({ history }) => {
         var mou = 12;
       }
       // state.mouth = mou;
-      
-      state.year += number ;
+
+      state.year += number;
       var date = {
         mouth: mou,
         year: state.year,
@@ -158,7 +166,7 @@ const Profile = ({ history }) => {
       var date = {
         mouth: state.mouth + number,
         year: state.year,
-        day: state.aux[state.mouth+number],
+        day: state.aux[state.mouth + number],
       };
       var mou = state.mouth + number;
     }
@@ -166,20 +174,20 @@ const Profile = ({ history }) => {
     var data = date;
     if (Aux) {
       routeBalance(data).then(function (data) {
-        NewDate(data,number,mou);
+        NewDate(data, number, mou);
       });
     }
   };
 
   useEffect(() => {
     state.today = new Date();
-    state.mouth = state.today.getMonth()+1;
-    
+    state.mouth = state.today.getMonth() + 1;
+
     state.year = state.today.getFullYear();
     var date = {
       mouth: state.today.getMonth() + 1,
       year: state.today.getFullYear(),
-      day: state.aux[state.today.getMonth()+1],
+      day: state.aux[state.today.getMonth() + 1],
     };
     // console.log(date);
     // setState({ ...state, today: date });
@@ -187,7 +195,7 @@ const Profile = ({ history }) => {
     if (!state.fetched) {
       routeBalance(data).then(function (data) {
         // console.log(data);
-        NewDate(data,0,state.today.getMonth()+1);
+        NewDate(data, 0, state.today.getMonth() + 1);
       });
     }
   }, []);

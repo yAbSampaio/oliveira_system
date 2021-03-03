@@ -29,13 +29,12 @@ app.post('/list', (req, res) => {
       ORDER BY c.id ,due_date DESC) AS idk WHERE DATE(due_date) <= DATE(now()) AND balance != '0' ORDER BY due_date DESC `;
     pool.query(sql).then((response) => {
       // console.log(response.rows);
-      res.status(201).json(response.rows);
+      res.status(200).json(response.rows);
     });
   } catch (err) {
     console.error(err.message);
   }
 });
-
 
 app.post('/listQuit', (req, res) => {
   try {
@@ -53,7 +52,7 @@ app.post('/listQuit', (req, res) => {
       ORDER BY c.id ,due_date DESC) AS idk WHERE balance = '0' ORDER BY due_date DESC `;
     pool.query(sql).then((response) => {
       // console.log(response.rows);
-      res.status(201).json(response.rows);
+      res.status(200).json(response.rows);
     });
   } catch (err) {
     console.error(err.message);
@@ -91,15 +90,15 @@ app.post('/registerClient', (req, res) => {
         pool
           .query(sql_payment, values_payments)
           .then(() => {
-            res.status(201).json({ status: 1 });
+            res.status(200).json({ status: 1 });
           })
           .catch((e) => console.error(e.stack));
       })
       .catch((e) => {
         console.log(e.message);
         res.status(504).json({
-        Teste: e.message
-        })
+          Teste: e.message,
+        });
       });
   } catch (err) {
     console.error(err.message);
@@ -111,13 +110,13 @@ app.post('/profile', (req, res) => {
     const { id } = req.body;
     var sql = `SELECT c.id, c.name, c.street, c.home_num,c.district,c.job,c.cpf,c.cep,c.telephone, 
       (SELECT SUM(balance) FROM payments AS p WHERE p.client_id = c.id) AS balance,
-      (SELECT p.payday FROM payments AS p WHERE c.id = p.client_id ORDER BY p.payday DESC LIMIT 1),
-      (SELECT p.deadline FROM payments AS p WHERE c.id = p.client_id ORDER BY p.payday DESC LIMIT 1) 
-      FROM clients AS c LEFT JOIN payments AS p ON c.id = p.client_id WHERE c.id = $1 GROUP BY c.id 
-      ORDER BY (SELECT p.payday FROM payments AS p WHERE c.id = p.client_id ORDER BY p.payday DESC LIMIT 1) + interval '1' DAY*(SELECT p.deadline FROM payments AS p WHERE c.id = p.client_id ORDER BY p.payday DESC LIMIT 1) DESC`;
+      (SELECT p.payday FROM payments AS p WHERE c.id = p.client_id ORDER BY p.id DESC LIMIT 1),
+      (SELECT p.deadline FROM payments AS p WHERE c.id = p.client_id ORDER BY p.id DESC LIMIT 1) 
+      FROM clients AS c LEFT JOIN payments AS p ON c.id = p.client_id WHERE c.id = $1 GROUP BY c.id`;
+    // ORDER BY (SELECT p.payday FROM payments AS p WHERE c.id = p.client_id ORDER BY p.payday DESC LIMIT 1) + interval '1' DAY*(SELECT p.deadline FROM payments AS p WHERE c.id = p.client_id ORDER BY p.payday DESC LIMIT 1) DESC`;
     var values = [id];
     pool.query(sql, values).then((re) => {
-      res.status(201).json(re.rows[0]);
+      res.status(200).json(re.rows[0]);
     });
   } catch (err) {
     console.error(err.message);
@@ -144,7 +143,7 @@ app.post('/profile/edit', (req, res) => {
     pool
       .query(sql, values)
       .then(() => {
-        res.status(201).json({ status: 1 });
+        res.status(200).json({ status: 1 });
       })
       .catch((e) => console.error(e.stack));
   } catch (err) {
@@ -167,7 +166,7 @@ app.post('/getSearch', (req, res) => {
         var values = [search];
 
         pool.query(sql, values).then((response) => {
-          res.status(201).json(response.rows);
+          res.status(200).json(response.rows);
         });
 
         break;
@@ -180,7 +179,7 @@ app.post('/getSearch', (req, res) => {
         var values = [search];
 
         pool.query(sql, values).then((response) => {
-          res.status(201).json(response.rows);
+          res.status(200).json(response.rows);
         });
 
         break;
@@ -193,7 +192,7 @@ app.post('/getSearch', (req, res) => {
         var values = [search];
 
         pool.query(sql, values).then((response) => {
-          res.status(201).json(response.rows);
+          res.status(200).json(response.rows);
         });
         break;
       case 4:
@@ -206,7 +205,7 @@ app.post('/getSearch', (req, res) => {
         var values = [search];
 
         pool.query(sql, values).then((response) => {
-          res.status(201).json(response.rows);
+          res.status(200).json(response.rows);
         });
         break;
       case 5:
@@ -219,7 +218,7 @@ app.post('/getSearch', (req, res) => {
         var values = [search];
 
         pool.query(sql, values).then((response) => {
-          res.status(201).json(response.rows);
+          res.status(200).json(response.rows);
         });
         break;
       case 6:
@@ -232,7 +231,7 @@ app.post('/getSearch', (req, res) => {
         var values = [search];
 
         pool.query(sql, values).then((response) => {
-          res.status(201).json(response.rows);
+          res.status(200).json(response.rows);
         });
         break;
     }
@@ -251,7 +250,7 @@ app.post('/addPayment', (req, res) => {
     pool
       .query(sql, values)
       .then(() => {
-        res.status(201).json({ status: 1 });
+        res.status(200).json({ status: 1 });
       })
       .catch((e) => console.error(e.stack));
   } catch (err) {
@@ -267,7 +266,7 @@ app.post('/getHistoric', (req, res) => {
     FROM payments AS p WHERE p.client_id = $1 ORDER BY payday`;
     var values = [id];
     pool.query(sql, values).then((re) => {
-      res.status(201).json(re.rows);
+      res.status(200).json(re.rows);
     });
   } catch (err) {
     console.error(err.message);
@@ -277,14 +276,14 @@ app.post('/getHistoric', (req, res) => {
 app.post('/getBalance', (req, res) => {
   try {
     const { mouth, year, day } = req.body;
-    const  date1  = year + "-" + mouth + "-" + 1;
-    const  date2  = year + "-" + mouth + "-" + day;
+    const date1 = year + '-' + mouth + '-' + 1;
+    const date2 = year + '-' + mouth + '-' + day;
     // console.log(date1)
     var sql = `SELECT p.client_id, p.payday, p.balance 
     FROM payments AS p WHERE p.payday >=  $1 AND p.payday <= $2 ORDER BY payday`;
     var values = [date1, date2];
     pool.query(sql, values).then((re) => {
-      res.status(201).json(re.rows);
+      res.status(200).json(re.rows);
     });
   } catch (err) {
     console.error(err.message);
