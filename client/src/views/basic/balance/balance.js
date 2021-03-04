@@ -101,6 +101,9 @@ const Profile = ({ history }) => {
           case -290:
             sell[0] += 1;
             break;
+          case -390:
+            sell[1] += 1;
+            break;
           case -400:
             sell[1] += 1;
             break;
