@@ -129,13 +129,9 @@ const Register = ({ history }) => {
       client: client,
       payment: payment,
     };
-    console.log(msg);
-    console.log(err);
-    console.log(data);
     if (err) {
       routeRegister(data)
         .then(function (data) {
-          console.log(data);
           setState({
             ...state,
             error: err,
@@ -144,7 +140,6 @@ const Register = ({ history }) => {
           window.location.reload();
         })
         .catch((err) => {
-          console.log(err);
           setState({
             ...state,
             error: false,

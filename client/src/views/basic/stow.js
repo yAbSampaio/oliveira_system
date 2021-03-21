@@ -35,18 +35,16 @@ export const stow_payday = (payday) => {
 
 export const stow_deadline = (due_date, deadline, payday, balance) => {
   if (due_date.length !== 0) {
-    console.log("fun");
     if (deadline.length !== 0) {
       return deadline;
     } else {
-      console.log("funf");
       // if (balance == 0) {
-      //   console.log("funfou");
+
       //   return 0;
       // } else {
       var date = moment(payday);
       var due = moment(due_date);
-      // console.log(due)
+
       const duration = moment.duration(due.diff(date));
       console.log(duration.asDays());
       return Math.floor(duration.asDays());
@@ -55,10 +53,8 @@ export const stow_deadline = (due_date, deadline, payday, balance) => {
     }
   } else {
     if (deadline.length !== 0) {
-      console.log(deadline);
       return deadline;
     } else {
-      console.log("fun2");
       return 0;
     }
   }

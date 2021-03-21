@@ -101,11 +101,23 @@ const Profile = ({ history }) => {
           case -290:
             sell[0] += 1;
             break;
+          case -600:
+            sell[0] += 2;
+            break;
+          case -580:
+            sell[0] += 2;
+            break;
           case -390:
             sell[1] += 1;
             break;
           case -400:
             sell[1] += 1;
+            break;
+          case -780:
+            sell[1] += 2;
+            break;
+          case -800:
+            sell[1] += 2;
             break;
           case -450:
             sell[2] += 1;
@@ -113,8 +125,17 @@ const Profile = ({ history }) => {
           case -430:
             sell[2] += 1;
             break;
+          case -860:
+            sell[2] += 2;
+            break;
+          case -900:
+            sell[2] += 2;
+            break;
+          case 0:
+            break;
 
           default:
+            console.log(data[i]);
             sell[3] += 1;
             break;
         }
