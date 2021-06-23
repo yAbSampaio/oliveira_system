@@ -82,8 +82,10 @@ const Edit = ({ history }) => {
 
   const editClient = () => {
     setState({
-      ...state, error: "", message: ""
-    })
+      ...state,
+      error: "",
+      message: "",
+    });
     var msg = "";
     const client = {
       name: state.client.name,
@@ -108,12 +110,14 @@ const Edit = ({ history }) => {
     );
     var err = msg != "" ? false : true;
     setState({
-      ...state, error: err, message: msg
+      ...state,
+      error: err,
+      message: msg,
     });
-    
+
     const data = {
       client: client,
-      index: id
+      index: id,
     };
     if (err) {
       routeEdit(data)
@@ -127,8 +131,12 @@ const Edit = ({ history }) => {
             error: false,
             message: " Aconteceu um erro Tente Novamente",
           });
-
         });
+    }
+  };
+  const handleKeys = (e, func) => {
+    if (e.keyCode === 13) {
+      func(e);
     }
   };
 
@@ -186,6 +194,7 @@ const Edit = ({ history }) => {
                   <CLabel>Nome :</CLabel>
                   <CInput
                     type="text"
+                    onKeyUp={(e) => handleKeys(e, editClient)}
                     placeholder="Thiago Jasen Sampaio"
                     value={state.client.name}
                     onChange={(e) => {
@@ -201,6 +210,7 @@ const Edit = ({ history }) => {
                     placeholder="123.456.789-00"
                     maxLength="14"
                     name="cpf"
+                    onKeyUp={(e) => handleKeys(e, editClient)}
                     value={state.client.cpf}
                     onChange={(e) => handlechange(e)}
                   />
@@ -210,6 +220,7 @@ const Edit = ({ history }) => {
                   <CInput
                     type="text"
                     placeholder="Rua Elmer"
+                    onKeyUp={(e) => handleKeys(e, editClient)}
                     value={state.client.street}
                     onChange={(e) => {
                       let client = { ...state.client };
@@ -224,6 +235,7 @@ const Edit = ({ history }) => {
                       <CLabel>Bairro :</CLabel>
                       <CInput
                         name="district"
+                        onKeyUp={(e) => handleKeys(e, editClient)}
                         placeholder="Cidade Nova"
                         value={state.client.district}
                         onChange={(e) => {
@@ -240,6 +252,7 @@ const Edit = ({ history }) => {
                       <CInput
                         type="text"
                         placeholder="131"
+                        onKeyUp={(e) => handleKeys(e, editClient)}
                         value={state.client.home_num}
                         onChange={(e) => {
                           let client = { ...state.client };
@@ -254,6 +267,7 @@ const Edit = ({ history }) => {
                       <CLabel>CEP :</CLabel>
                       <CInput
                         maxLength="9"
+                        onKeyUp={(e) => handleKeys(e, editClient)}
                         name="cep"
                         placeholder="12345-678"
                         value={state.client.cep}
@@ -270,6 +284,7 @@ const Edit = ({ history }) => {
                         type="tel"
                         maxLength="15"
                         name="tel"
+                        onKeyUp={(e) => handleKeys(e, editClient)}
                         value={state.client.telephone}
                         onChange={(e) => telephoneChange(e)}
                         placeholder="(53) 981408183"
@@ -281,6 +296,7 @@ const Edit = ({ history }) => {
                       <CLabel>Observações :</CLabel>
                       <CInput
                         name="job"
+                        onKeyUp={(e) => handleKeys(e, editClient)}
                         value={state.client.job}
                         onChange={(e) => {
                           let client = { ...state.client };

@@ -94,50 +94,45 @@ const Profile = ({ history }) => {
           buy[4] += data[i].balance;
         }
       } else {
-        switch (data[i].balance) {
-          case -300:
-            sell[0] += 1;
-            break;
-          case -290:
-            sell[0] += 1;
-            break;
-          case -600:
-            sell[0] += 2;
-            break;
-          case -580:
-            sell[0] += 2;
-            break;
-          case -390:
-            sell[1] += 1;
-            break;
-          case -400:
-            sell[1] += 1;
-            break;
-          case -780:
-            sell[1] += 2;
-            break;
-          case -800:
-            sell[1] += 2;
-            break;
-          case -450:
-            sell[2] += 1;
-            break;
-          case -430:
-            sell[2] += 1;
-            break;
-          case -860:
-            sell[2] += 2;
-            break;
-          case -900:
-            sell[2] += 2;
-            break;
-          case 0:
-            break;
-
-          default:
-            console.log(data[i]);
-            sell[3] += 1;
-            break;
+        if (data[i].balance === -300 || data[i].balance === -290) {
+          sell[0] += 1;
+        } else if (data[i].balance === -600 || data[i].balance === -580) {
+          sell[0] += 2;
+        } else if (
+          data[i].balance === -370 ||
+          data[i].balance === -380 ||
+          data[i].balance === -390 ||
+          data[i].balance === -400
+        ) {
+          sell[1] += 1;
+        } else if (
+          data[i].balance === -740 ||
+          data[i].balance === -760 ||
+          data[i].balance === -780 ||
+          data[i].balance === -800
+        ) {
+          sell[1] += 2;
+        } else if (
+          data[i].balance === -450 ||
+          data[i].balance === -430 ||
+          data[i].balance === -440
+        ) {
+          sell[2] += 1;
+        } else if (
+          data[i].balance === -900 ||
+          data[i].balance === -860 ||
+          data[i].balance === -880
+        ) {
+          sell[2] += 2;
+        } else if (data[i].balance === -720) {
+          sell[0] += 1;
+          sell[2] += 1;
+        } else if (data[i].balance === -840) {
+          sell[1] += 1;
+          sell[2] += 1;
+        } else if (data[i].balance !== 0) {
+          console.log(data[i]);
+          sell[3] += 1;
         }
       }
     }

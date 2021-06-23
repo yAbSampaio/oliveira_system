@@ -73,7 +73,12 @@ const Search = ({ history }) => {
     }
   };
   const handlechange = (e) => {
-    setState({ ...state, cpf: cpfMask(e.target.value), inpTxt: cpfMask(e.target.value), case: 1 });
+    setState({
+      ...state,
+      cpf: cpfMask(e.target.value),
+      inpTxt: cpfMask(e.target.value),
+      case: 1,
+    });
   };
 
   const handleClick = (id) => {
@@ -107,7 +112,7 @@ const Search = ({ history }) => {
     return Lista;
   };
   const researched = () => {
-    console.log(state.inpTxt)
+    // console.log(state.inpTxt);
     if (state.cpf != "") {
       var index = state.case;
       var search = clearString(state.cpf);
@@ -117,40 +122,46 @@ const Search = ({ history }) => {
     } else if (state.inpTxt != "") {
       var index = state.case;
       var search = state.inpTxt;
-      console.log(search)
+      // console.log(search);
       state.inpTxt = "";
       state.input_check = true;
-    // } else if (state.due_date != "") {
-    //   var index = 3;
-    //   var search = state.due_date;
-    //   state.due_date = "";
-    //   state.input_check = true;
-    // } else if (state.street != "") {
-    //   var index = 4;
-    //   var search = state.street;
-    //   state.street = "";
-    //   state.input_check = true;
-    // } else if (state.district != "") {
-    //   var index = 5;
-    //   var search = state.district;
-    //   state.district = "";
-    //   state.input_check = true;
-    // }  else if (state.job != "") {
-    //   var index = 6;
-    //   var search = state.job;
-    //   state.job = "";
-    //   state.input_check = true;
-    }  else {
+      // } else if (state.due_date != "") {
+      //   var index = 3;
+      //   var search = state.due_date;
+      //   state.due_date = "";
+      //   state.input_check = true;
+      // } else if (state.street != "") {
+      //   var index = 4;
+      //   var search = state.street;
+      //   state.street = "";
+      //   state.input_check = true;
+      // } else if (state.district != "") {
+      //   var index = 5;
+      //   var search = state.district;
+      //   state.district = "";
+      //   state.input_check = true;
+      // }  else if (state.job != "") {
+      //   var index = 6;
+      //   var search = state.job;
+      //   state.job = "";
+      //   state.input_check = true;
+    } else {
       state.input_check = false;
     }
 
     if (state.input_check) {
       var data = { index, search };
-      console.log(data);
+      // console.log(data);
       routeSearchClient(data).then(function (data) {
         // console.log(data);
         setState({ ...state, client_list: NewDate(data), list_check: true });
       });
+    }
+  };
+
+  const handleKeys = (e, func) => {
+    if (e.keyCode === 13) {
+      func(e);
     }
   };
 
@@ -180,6 +191,7 @@ const Search = ({ history }) => {
                           maxLength="14"
                           name="documentId"
                           value={state.cpf}
+                          onKeyUp={(e) => handleKeys(e, researched)}
                           onChange={(e) => handlechange(e)}
                           placeholder="123.456.789-00"
                         />
@@ -192,10 +204,15 @@ const Search = ({ history }) => {
                           id="Input"
                           type="text"
                           name="nome"
+                          onKeyUp={(e) => handleKeys(e, researched)}
                           placeholder="Thiago Jasen Sampaio"
                           // value={state.inpTxt}
                           onChange={(e) => {
-                            setState({ ...state, inpTxt: e.target.value, case: 2 });
+                            setState({
+                              ...state,
+                              inpTxt: e.target.value,
+                              case: 2,
+                            });
                           }}
                         />
                       </CFormGroup>
@@ -206,8 +223,13 @@ const Search = ({ history }) => {
                         <CInput
                           type="date"
                           name="due_date"
+                          onKeyUp={(e) => handleKeys(e, researched)}
                           onChange={(e) => {
-                            setState({ ...state, inpTxt: e.target.value, case: 3 });
+                            setState({
+                              ...state,
+                              inpTxt: e.target.value,
+                              case: 3,
+                            });
                           }}
                         />
                       </CFormGroup>
@@ -221,8 +243,13 @@ const Search = ({ history }) => {
                           name="street"
                           placeholder="Elmer Lawsorense"
                           // value={state.inpTxt}
+                          onKeyUp={(e) => handleKeys(e, researched)}
                           onChange={(e) => {
-                            setState({ ...state, inpTxt: e.target.value, case: 4 });
+                            setState({
+                              ...state,
+                              inpTxt: e.target.value,
+                              case: 4,
+                            });
                           }}
                         />
                       </CFormGroup>
@@ -238,8 +265,13 @@ const Search = ({ history }) => {
                           name="district"
                           placeholder="Cidade Nova"
                           // value={state.district}
+                          onKeyUp={(e) => handleKeys(e, researched)}
                           onChange={(e) => {
-                            setState({ ...state, inpTxt: e.target.value, case: 5 });
+                            setState({
+                              ...state,
+                              inpTxt: e.target.value,
+                              case: 5,
+                            });
                           }}
                         />
                       </CFormGroup>
@@ -252,9 +284,14 @@ const Search = ({ history }) => {
                           type="text"
                           name="ob"
                           placeholder="Trabalho ou Erros"
-                          value={state.job}
+                          onKeyUp={(e) => handleKeys(e, researched)}
+                          // value={state.job}
                           onChange={(e) => {
-                            setState({ ...state, inpTxt: e.target.value, case: 6 });
+                            setState({
+                              ...state,
+                              inpTxt: e.target.value,
+                              case: 6,
+                            });
                           }}
                         />
                       </CFormGroup>
@@ -263,7 +300,6 @@ const Search = ({ history }) => {
                   <submit
                     type="submit"
                     class="Button"
-                    
                     onClick={() => researched()}
                   >
                     Procurar
@@ -291,7 +327,7 @@ const Search = ({ history }) => {
                     itemsPerPage={10}
                     pagination
                     scopedSlots={{
-                      "Perfil": (item, index) => {
+                      Perfil: (item, index) => {
                         return (
                           <td className="py-2">
                             <CButton

@@ -160,6 +160,12 @@ const Register = ({ history }) => {
     setState({ ...state, client });
   };
 
+  const handleKeys = (e, func) => {
+    if (e.keyCode === 13) {
+      func(e);
+    }
+  };
+
   const telephoneChange = (e) => {
     let client = { ...state.client };
     client.telephone = telMask(e.target.value);
@@ -376,6 +382,7 @@ const Register = ({ history }) => {
                       <CInput
                         type="date"
                         name="payday"
+                        onKeyUp={(e) => handleKeys(e, register)}
                         onChange={(e) => {
                           let payment = { ...state.payment };
                           payment.payday = e.target.value;

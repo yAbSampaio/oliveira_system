@@ -88,50 +88,62 @@ const Profile = ({ history }) => {
         balance: "",
         due_date: "",
       };
-      hist.payday =  moment(data[index].payday).format("DD/MM/YYYY");
+      hist.payday = moment(data[index].payday).format("DD/MM/YYYY");
       if (data[index].balance == 0 && index !== 0) {
-        hist.balance = "Adiou";  
-      }
-      else{
+        hist.balance = "Adiou";
+      } else {
         hist.balance = data[index].balance;
       }
       hist.due_date = moment(data[index].due_date).format("DD/MM/YYYY");
 
       Lista.push(hist);
-      
     }
-    
+
     pop(Lista);
     return Lista;
   };
 
   const pop = (dataLis) => {
-    
+    console.log(dataLis);
     confirmAlert({
       customUI: ({ onClose }) => {
         return (
           <div className="custom-ui">
             <h1>Historico</h1>
-            <table
-              className="table table-hover table-outline mb-0 d-none d-sm-table"
-              id="list"
+            <div
+              style={{
+                height: "600px",
+                width: "400px",
+                display: "flex",
+                flexDirection: "column",
+                flexWrap: "nowrap",
+                overflowY: "scroll",
+              }}
             >
-              <thead className="thead-light">
-                <th>Data Inicial: </th>
-                <th>Valor: </th>
-                <th>Vencimento: </th>
-              </thead>
-              {dataLis.map((info, index) => (
-                <tbody>
-                  <tr>
-                    <td> {info.payday} </td>
-                    <td>{info.balance}</td>
-                    <td>{info.due_date} </td>
-                  </tr>
-                </tbody>
-              ))}
-            </table>
-            <button class="myBut" onClick={onClose}>Sair</button>
+              <table
+                className="table table-hover table-outline mb-0 d-none d-sm-table"
+                id="list"
+              >
+                <thead className="thead-light">
+                  <th>Data Inicial: </th>
+                  <th>Valor: </th>
+                  <th>Vencimento: </th>
+                </thead>
+                {dataLis.map((info, index) => (
+                  <tbody>
+                    <tr>
+                      <td> {info.payday} </td>
+                      <td>{info.balance}</td>
+                      <td>{info.due_date} </td>
+                    </tr>
+                  </tbody>
+                ))}
+              </table>
+            </div>
+
+            <button class="myBut" onClick={onClose}>
+              Sair
+            </button>
           </div>
         );
       },
@@ -147,7 +159,7 @@ const Profile = ({ history }) => {
         List: NewDate(data),
       });
     });
-    };
+  };
 
   useEffect(() => {
     if (!state.fetched) {
@@ -177,7 +189,6 @@ const Profile = ({ history }) => {
         };
         setState({ ...state, fetched: true, client, payment });
       });
-      
     }
   }, []);
 
@@ -223,7 +234,7 @@ const Profile = ({ history }) => {
                       <td>{state.client.home_num}</td>
                     </tr>
                     <tr>
-                      <td>Bairo :</td>
+                      <td>Bairro :</td>
                       <td>{state.client.district}</td>
                     </tr>
                     <tr>

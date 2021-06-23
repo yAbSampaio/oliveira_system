@@ -53,6 +53,12 @@ const Payment = ({ history }) => {
     },
   };
 
+  const handleKeys = (e, func) => {
+    if (e.keyCode === 13) {
+      func(e);
+    }
+  };
+
   const moneyChange = (e, value, maskedValue) => {
     e.preventDefault();
     let payment = { ...state.payment };
@@ -62,8 +68,10 @@ const Payment = ({ history }) => {
 
   const payAtt = () => {
     setState({
-      ...state, error: "", message: ""
-    })
+      ...state,
+      error: "",
+      message: "",
+    });
     var msg = "";
     const payment = {
       balance: stow_debt2(state.payment.balance, state.buy),
@@ -77,27 +85,24 @@ const Payment = ({ history }) => {
       payment.payday,
       payment.balance
     );
-    msg = validate_date(
-      payment.payday,
-      payment.deadline,
-      msg,
-      payment.balance
-    );
+    msg = validate_date(payment.payday, payment.deadline, msg, payment.balance);
     var err = msg != "" ? false : true;
     setState({
-      ...state, error: err, message: msg
+      ...state,
+      error: err,
+      message: msg,
     });
-    
+
     const data = {
       client_id: id,
       payment: payment,
     };
     if (err) {
-      console.log(data)
+      console.log(data);
       routePay(data)
         .then(function (data) {
           history.push("/profile/" + id);
-          history.go(0)
+          history.go(0);
         })
         .catch((err) => {
           setState({
@@ -156,7 +161,7 @@ const Payment = ({ history }) => {
                       </CCol>
                       <CCol xs="4">
                         <CLabel>Pagamento ? </CLabel>
-                        <CFormGroup variant="custom-checkbox"  inline>
+                        <CFormGroup variant="custom-checkbox" inline>
                           <CInputCheckbox
                             custom
                             id="inline"
@@ -166,10 +171,7 @@ const Payment = ({ history }) => {
                               setState({ ...state, buy: e.target.checked });
                             }}
                           />
-                          <CLabel
-                            variant="custom-checkbox"
-                            htmlFor="inline"
-                          >
+                          <CLabel variant="custom-checkbox" htmlFor="inline">
                             Sim
                           </CLabel>
                         </CFormGroup>
@@ -219,6 +221,7 @@ const Payment = ({ history }) => {
                       <CInput
                         type="date"
                         name="payday"
+                        onKeyUp={(e) => handleKeys(e, payAtt)}
                         onChange={(e) => {
                           let payment = { ...state.payment };
                           payment.payday = e.target.value;
